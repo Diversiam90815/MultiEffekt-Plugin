@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(PluginTemplate VERSION 1.0 LANGUAGES CXX)
+project(Plugin-Distortion VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR})
 
