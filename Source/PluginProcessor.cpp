@@ -13,16 +13,22 @@ PluginProcessor::PluginProcessor()
 						 .withOutput("Output", AudioChannelSet::stereo(), true)
 #endif
 						 ),
-	  mValueTreeState(*this, nullptr, "PATERMERS", createParameterLayout())
+	  mValueTreeState(*this, nullptr, "PARAMETERS", createParameterLayout())
 #endif
 {
 	mValueTreeState.addParameterListener(paramInput, this);
+	mValueTreeState.addParameterListener(paramOutput, this);
+	mValueTreeState.addParameterListener(paramDrive, this);
+	mValueTreeState.addParameterListener(paramBlend, this);
 }
 
 
 PluginProcessor::~PluginProcessor()
 {
 	mValueTreeState.removeParameterListener(paramInput, this);
+	mValueTreeState.removeParameterListener(paramOutput, this);
+	mValueTreeState.removeParameterListener(paramDrive, this);
+	mValueTreeState.removeParameterListener(paramBlend, this);
 }
 
 
@@ -174,9 +180,15 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 	std::vector<std::unique_ptr<RangedAudioParameter>> params;
 
 	// add parameters here
-	auto											   input = std::make_unique<AudioParameterFloat>(paramInput, inputGainName, inputMinValue, inputMaxValue, inputDefaultValue);
+	auto											   input  = std::make_unique<AudioParameterFloat>(paramInput, inputGainName, inputMinValue, inputMaxValue, inputDefaultValue);
+	auto											   output = std::make_unique<AudioParameterFloat>(paramOutput, outputName, outputMinValue, outputMaxValue, outputDefaultValue);
+	auto											   drive  = std::make_unique<AudioParameterFloat>(paramDrive, driveName, driveMinValue, driveMaxValue, driveDefaultValue);
+	auto											   blend  = std::make_unique<AudioParameterFloat>(paramBlend, blendName, blendMinValue, blendMaxValue, blendDefaultValue);
 
 	params.push_back(std::move(input));
+	params.push_back(std::move(output));
+	params.push_back(std::move(drive));
+	params.push_back(std::move(blend));
 
 	return {params.begin(), params.end()};
 }
