@@ -212,6 +212,25 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 
 void PluginProcessor::parameterChanged(const String &parameterID, float newValue)
 {
+	if (parameterID == paramInput)
+	{
+		input = newValue;
+	}
+
+	else if (parameterID == paramDrive)
+	{
+		drive == newValue;
+	}
+
+	else if (parameterID == paramOutput)
+	{
+		output = newValue;
+	}
+
+	else if (parameterID == paramBlend)
+	{
+		blend = newValue;
+	}
 }
 
 
