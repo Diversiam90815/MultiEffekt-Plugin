@@ -21,11 +21,11 @@ constexpr float outputDefaultValue = 0.0f;
 constexpr auto	driveName		   = "Drive";
 constexpr auto	paramDrive		   = "drive";
 constexpr float driveMinValue	   = 0.0f;
-constexpr float driveMaxValue	   = 100.0f;
+constexpr float driveMaxValue	   = 10.0f;
 constexpr float driveDefaultValue  = 0.0f;
 
 constexpr auto	blendName		   = "Dry/Wet";
 constexpr auto	paramBlend		   = "drywet";
 constexpr float blendMinValue	   = 0.0f;
-constexpr float blendMaxValue	   = 100.0f;
-constexpr float blendDefaultValue  = 50.0f;
+constexpr float blendMaxValue	   = 1.0f;
+constexpr float blendDefaultValue  = 0.5f;

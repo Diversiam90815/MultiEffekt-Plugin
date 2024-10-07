@@ -145,7 +145,23 @@ void PluginProcessor::processBlock(AudioBuffer<float> &buffer, MidiBuffer &midiM
 	{
 		auto *channelData = buffer.getWritePointer(channel);
 
-		// ..do something to the data...
+		for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+		{
+			// Store clean sample for later blend
+			float cleanSignal = channelData[sample];
+
+			// Apply input gain
+			channelData[sample] *= input;
+
+			// Apply drive (additional gain before distortion)
+			channelData[sample] *= drive;
+
+			// Apply distortion (arctangent function)
+			float distortedSignal = (2.0f / MathConstants<float>::pi) * atan(channelData[sample]);
+
+			// Blend between distorted and clean signal
+			channelData[sample]	  = (blend * distortedSignal + (1.0f - blend) * cleanSignal) * output;
+		}
 	}
 }
 
