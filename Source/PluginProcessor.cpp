@@ -90,7 +90,7 @@ void PluginProcessor::setCurrentProgram(int index)
 }
 
 
-const juce::String PluginProcessor::getProgramName(int index)
+const String PluginProcessor::getProgramName(int index)
 {
 	return {};
 }
@@ -103,6 +103,11 @@ void PluginProcessor::changeProgramName(int index, const String &newName)
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
+	// Set the initial values of the parameters
+	input  = Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramInput)->load());
+	drive  = Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramDrive)->load());
+	output = Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramOutput)->load());
+	blend  = jmap(mValueTreeState.getRawParameterValue(paramBlend)->load(), 0.0f, 100.0f, 0.0f, 1.0f);
 }
 
 
@@ -115,7 +120,7 @@ void PluginProcessor::releaseResources()
 bool PluginProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const
 {
 #if JucePlugin_IsMidiEffect
-	juce::ignoreUnused(layouts);
+	ignoreUnused(layouts);
 	return true;
 #else
 	if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono() && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
@@ -134,6 +139,8 @@ bool PluginProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const
 
 void PluginProcessor::processBlock(AudioBuffer<float> &buffer, MidiBuffer &midiMessages)
 {
+	ignoreUnused(midiMessages);
+
 	ScopedNoDenormals noDenormals;
 	auto			  totalNumInputChannels	 = getTotalNumInputChannels();
 	auto			  totalNumOutputChannels = getTotalNumOutputChannels();
@@ -153,8 +160,8 @@ void PluginProcessor::processBlock(AudioBuffer<float> &buffer, MidiBuffer &midiM
 			// Apply input gain
 			channelData[sample] *= input;
 
-			// Apply drive (additional gain before distortion)
-			channelData[sample] *= drive;
+			// Apply hyperbolic tangent to simulate natural saturation at high gain
+			channelData[sample]	  = std::tanh(drive * channelData[sample]);
 
 			// Apply distortion (arctangent function)
 			float distortedSignal = (2.0f / MathConstants<float>::pi) * atan(channelData[sample]);
@@ -214,22 +221,22 @@ void PluginProcessor::parameterChanged(const String &parameterID, float newValue
 {
 	if (parameterID == paramInput)
 	{
-		input = newValue;
+		input = Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramInput)->load());
 	}
 
 	else if (parameterID == paramDrive)
 	{
-		drive == newValue;
+		drive = Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramDrive)->load());
 	}
 
 	else if (parameterID == paramOutput)
 	{
-		output = newValue;
+		output = Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramOutput)->load());
 	}
 
 	else if (parameterID == paramBlend)
 	{
-		blend = newValue;
+		blend = jmap(mValueTreeState.getRawParameterValue(paramBlend)->load(), 0.0f, 100.0f, 0.0f, 1.0f);
 	}
 }
 
