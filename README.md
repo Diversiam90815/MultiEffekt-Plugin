@@ -1,32 +1,34 @@
-# PluginTemplate
+# Plugin-Distortion
 
 ## Overview
 
-PluginTemplate is a C++ audio plugin project template that uses the [JUCE](https://juce.com/) framework. This template provides a starting point for developing audio plugins, including CMake build scripts and a Python script for automated building.
+**Plugin-Distortion** is an audio plugin developed in C++ using the [JUCE](https://juce.com/) framework. It applies various distortion effects to audio signals, allowing you to shape and enhance your sound. This plugin is currently under development.
 
 ## Features
 
-- **C++20 Standard**: Utilizes modern C++ features for efficient and robust code.
-- **JUCE Integration**: Seamlessly integrates the JUCE framework for audio plugin development.
-- **CMake Build System**: Cross-platform build configuration using CMake.
-- **Automated Build Script**: Python script to simplify the build and preparation process.
-- **Visual Studio Support**: Configured for building with Visual Studio 2019 or higher.
+- **Real-Time Parameter Control**: Adjust parameters like gain, tone, and level with an intuitive GUI.
+- **Cross-Platform Support**: Compatible with Windows, macOS, and Linux.
+- **Plugin Formats**: Available as VST3, AU (macOS), and Standalone application.
+- **Automated Build Script**: Simplify the build process with a provided Python script.
 
 ## Prerequisites
 
 - **CMake**: Version 3.25 or higher.
 - **Python**: Version 3.x (for running `build.py`).
-- **Visual Studio**: 2019 or higher (the project uses the Visual Studio 17 generator).
 - **JUCE Framework**: Included as a submodule in `submodules/JUCE`.
+- **Compiler**:
+  - **Windows**: Visual Studio 2022 or higher.
+  - **macOS**: Xcode 12 or higher.
+  - **Linux**: GCC 9.0 or higher.
 
 ## Getting Started
 
 ### Cloning the Repository
 
-Clone the repository including its submodules:
+Clone the repository along with its submodules:
 
 ```bash
-git clone --recurse-submodules https://github.com/Diversiam90815/Plugin-Template.git
+git clone --recurse-submodules https://github.com/Diversiam90815/Plugin-Distortion.git
 ```
 
 If you've already cloned the repository without submodules, initialize them with:
@@ -39,22 +41,20 @@ git submodule update --init --recursive
 
 #### 1. Prepare the Build Environment
 
-Before building the project, you need to generate the necessary build files using CMake. This can be done using the `build.py` script with the `--prepare` or `-p` option.
+Navigate to the project directory and run the build preparation script:
 
 ```bash
-cd PluginTemplate
+cd Plugin-Distortion
 python build.py --prepare
 ```
 
-**Note**: By default, this prepares the project for a Release build. If you wish to prepare for a Debug build, include the `--debug` or `-d` option:
+For a **Debug** build, add the `--debug` or `-d` option:
 
 ```bash
 python build.py --prepare --debug
 ```
 
-This sets up the build environment for a Debug configuration.
-
-#### 2. Build the Project
+#### 2. Build the Plugin
 
 To build the project, use the `--build` or `-b` option:
 
@@ -62,187 +62,164 @@ To build the project, use the `--build` or `-b` option:
 python build.py --build
 ```
 
-This will compile the project using the build files generated during the preparation step.
+Or combine preparation and building in one command:
 
-- **Release Build**: By default, the build is configured for a Release build.
-- **Debug Build**: To build the project in Debug mode, include the `--debug` or `-d` option:
-
-  ```bash
-  python build.py --build --debug
-  ```
-
-**Important**: If you did not run the `--prepare` step separately, the script will automatically prepare the build environment before building.
-
-#### 3. Combined Preparation and Build
-
-You can combine preparation and building in a single command. This is useful if you want to ensure that your build environment is up-to-date before compiling.
-
-- **Release Build**:
-
-  ```bash
-  python build.py --prepare --build
-  ```
-
-- **Debug Build**:
-
-  ```bash
-  python build.py --prepare --build --debug
-  ```
-
-In both cases, including the `--debug` or `-d` option switches the configuration to Debug mode.
-
-### Running the Plugin
-
-After a successful build, the Standalone application can be found in the build output directory. Navigate to:
-
-```
-build/<Configuration>/PluginTemplate_Standalone.exe
+```bash
+python build.py --prepare --build
 ```
 
-Replace `<Configuration>` with `Release` or `Debug` depending on your build configuration.
+For a **Debug** build:
+
+```bash
+python build.py --prepare --build --debug
+```
+
+#### 3. Run the Plugin
+
+After building, you can find the plugin in the `build` directory:
+
+- **Standalone Application**:
+  - **Windows**: `build/Release/PluginDistortion_Standalone.exe`
+  - **macOS**: `build/Release/PluginDistortion_Standalone.app`
+  - **Linux**: `build/Release/PluginDistortion_Standalone`
+- **VST3 Plugin**: Located in `build/Release/VST3/PluginDistortion.vst3`
+- **AU Plugin** (macOS only): Located in `build/Release/AU/PluginDistortion.component`
+
+## Usage
+
+- **In a DAW**:
+  1. Copy the plugin file to your DAW's plugin directory.
+  2. Rescan for plugins within your DAW.
+  3. Insert the plugin onto an audio track.
+  4. Adjust the parameters to achieve the desired distortion effect.
+
+- **Standalone Application**:
+  1. Run the `PluginDistortion_Standalone` executable.
+  2. Use the built-in audio input/output settings to route audio through the plugin.
+  3. Adjust the parameters in real-time to hear the changes.
 
 ## Project Structure
 
-- `Source/` - Contains the source code:
-  - `PluginProcessor.h/.cpp` - The main processing code for the plugin.
-  - `PluginEditor.h/.cpp` - The GUI editor for the plugin.
-  - `Parameters.h` - Definitions for plugin parameters.
-- `submodules/` - Contains the JUCE framework as a Git submodule.
-- `CMakeLists.txt` - The CMake build configuration file.
-- `build.py` - Python script to automate build preparation and compilation.
-- `ReadMe.md` - Project documentation (this file).
+- `Source/` - Main source code:
+  - `PluginProcessor.h/.cpp` - Audio processing logic.
+  - `PluginEditor.h/.cpp` - GUI components.
+  - `Parameters.h` - Plugin parameters definitions.
+- `submodules/` - Contains the JUCE framework.
+- `CMakeLists.txt` - CMake build configuration.
+- `build.py` - Python script for building the project.
+- `README.md` - Project documentation.
+- `.clang-format` - Code style guidelines.
 
-## CMake Configuration Details
+## Build Script Details (`build.py`)
 
-Key configurations in `CMakeLists.txt`:
+The `build.py` script automates the build process:
 
-- **Project Setup**:
-  - Project name: `PluginTemplate`
-  - Version: `1.0`
-  - Language: `CXX` (C++)
-- **C++ Standard**: C++20
-- **JUCE Integration**:
-  - JUCE is added via `add_subdirectory(submodules/JUCE)`.
-  - The plugin is added using `juce_add_plugin` with:
-    - Company Name: `DiversiamProduction`
-    - Plugin Manufacturer Code: `3160`
-    - Plugin Code: `IOTO`
-    - Formats: `Standalone`
-    - Product Name: `${PROJECT_NAME}`
-- **Source Files**:
-  - Headers and source files are specified and grouped.
-- **Compiler Definitions**:
-  - Disables web browser and CURL support in JUCE to streamline the build.
-  - Sets various JUCE options for audio and media formats.
-  - Defines `ENV_DEVELOPMENT` and `_CRT_SECURE_NO_WARNINGS`.
-- **Compiler Options**:
-  - For Release configuration: `/Oi`, `/Gy` (enable intrinsic functions and function-level linking).
-  - For Debug configuration: `/Od`, `/Z7` (disable optimizations and enable debug information).
-  - General options: `/sdl`, `/MP` (enable additional security checks and multi-processor compilation).
-  - Warnings are not treated as errors (`/WX-`).
-  - Suppresses specific warnings: `C4146`, `C4996`.
-- **Linking Libraries**:
-  - Links against `juce_audio_utils`, `juce_audio_plugin_client`, and `juce_core`.
+- **Options**:
+  - `--prepare` or `-p`: Generates build files using CMake.
+  - `--build` or `-b`: Compiles the plugin.
+  - `--debug` or `-d`: Builds in Debug mode.
 
-## Build Script (`build.py`) Details
+**Examples**:
 
-The `build.py` script simplifies the build process with the following features:
-
-- **Auto CWD Management**: Changes working directory automatically and restores it afterward.
-- **Command Execution**: Runs system commands and handles output and errors.
-- **Build Preparation**:
-  - Generates build files using CMake with the specified generator (`Visual Studio 17`).
-  - The `--debug` or `-d` option affects the configuration by setting the `TARGET_CONFIG` to `Debug` (default is `Release`).
-- **Build Execution**:
-  - Cleans previous builds if necessary.
-  - Builds the project using the generated build files.
-- **Command-Line Arguments**:
-  - `-p`, `--prepare`: Prepares the project for building or IDE usage.
-    - **Usage**: `python build.py --prepare` (for Release build)
-    - **Debug Build**: Include `--debug` to prepare for Debug build.
-  - `-b`, `--build`: Builds the project.
-    - **Usage**: `python build.py --build` (for Release build)
-    - **Debug Build**: Include `--debug` to build in Debug mode.
-  - `-d`, `--debug`: Switches the configuration to Debug mode for both preparation and building.
-    - **Usage**: Can be combined with `--prepare` and/or `--build`.
-
-### Script Usage Examples
-
-- **Prepare the Project for Release Build**:
-
-  ```bash
-  python build.py --prepare
-  ```
-
-- **Prepare the Project for Debug Build**:
-
-  ```bash
-  python build.py --prepare --debug
-  ```
-
-- **Build the Project in Release Mode**:
-
-  ```bash
-  python build.py --build
-  ```
-
-- **Build the Project in Debug Mode**:
-
-  ```bash
-  python build.py --build --debug
-  ```
-
-- **Prepare and Build the Project in Release Mode**:
+- Prepare and build in **Release** mode:
 
   ```bash
   python build.py --prepare --build
   ```
 
-- **Prepare and Build the Project in Debug Mode**:
+- Prepare and build in **Debug** mode:
 
   ```bash
   python build.py --prepare --build --debug
   ```
 
-**Note**: The `--debug` or `-d` option affects both preparation and building steps. If you include it, both steps will use the Debug configuration.
-
-
-## Code Formatting with Clang-Format
-
-This project includes a `.clang-format` file that defines the code style guidelines for consistent formatting across the codebase. You can automatically format your code according to these standards using your editor's shortcut.
-
-### How to Use
-
-- **In Visual Studio (or compatible editors on macOS):**
-  - Open the file you wish to format.
-  - Press `Cmd + K`, then `Cmd + D` to auto-format the current file using the predefined style.
-
-This will format your code based on the rules specified in the `.clang-format` file, ensuring consistency and improving code readability.
-
-
 ## Customization
 
-You can customize the project by modifying:
+- **Add New Effects**: Extend `PluginProcessor.cpp` with additional distortion algorithms.
+- **Modify the Interface**: Customize the look and feel in `PluginEditor.cpp`.
+- **Adjust Parameters**: Update `Parameters.h` to add or modify plugin controls.
 
-- **Plugin Information**: Update the company name, manufacturer code, plugin code, and product name in `CMakeLists.txt`.
-- **JUCE Modules**: Enable or disable JUCE modules as needed.
-- **Source Code**: Implement your plugin logic in `PluginProcessor.cpp` and design your GUI in `PluginEditor.cpp`.
+## FAQ
 
-## Troubleshooting
+### Q: The plugin isn't showing up in my DAW. What should I do?
 
-- **Missing Submodules**: If you encounter errors related to missing JUCE modules, ensure you've cloned the repository with submodules.
-- **CMake Errors**: Make sure you have the required CMake version (3.25 or higher).
-- **Compiler Errors**: Ensure you're using a compatible compiler (Visual Studio 2019 or higher) and that your environment is correctly set up.
-- **Incorrect Build Configuration**: If the build is not using the desired configuration (Debug or Release), ensure you're using the `--debug` or `-d` option appropriately.
+**A:** Ensure you've copied the plugin file (`.vst3` or `.component`) to the correct plugin directory for your DAW and operating system. After copying, rescan your plugins within the DAW settings.
+
+### Q: I get an error about missing JUCE modules when building.
+
+**A:** Make sure you've initialized and updated the submodules. Run:
+
+```bash
+git submodule update --init --recursive
+```
+
+### Q: The build script fails with a CMake error. What could be wrong?
+
+**A:** Verify that you have CMake version 3.25 or higher installed. You can check your CMake version with:
+
+```bash
+cmake --version
+```
+
+### Q: How do I build the plugin for a different platform?
+
+**A:** The project uses CMake, which supports cross-platform builds. You'll need to run the build process on the target platform with the appropriate compiler and dependencies installed.
 
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
+Contributions are welcome! To contribute:
 
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature/YourFeature`.
-3. Commit your changes: `git commit -am 'Add some feature'`.
-4. Push to the branch: `git push origin feature/YourFeature`.
-5. Submit a pull request.
+1. **Fork** the repository.
+2. **Create** a new branch for your feature:
 
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+
+3. **Commit** your changes:
+
+   ```bash
+   git commit -m "Add your feature"
+   ```
+
+4. **Push** to your branch:
+
+   ```bash
+   git push origin feature/your-feature
+   ```
+
+5. **Submit** a pull request.
+
+Please ensure your code adheres to the project's coding standards and includes appropriate documentation.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Contact
+
+For questions or feedback:
+
+- **GitHub**: [Diversiam90815](https://github.com/Diversiam90815)
+- **Website**: [www.diversiam.com](https://www.diversiam.com)
+
+---
+
+Feel free to explore, modify, and use this audio distortion plugin in your projects. Enjoy creating unique sounds!
+
+## Code Formatting with Clang-Format
+
+This project includes a `.clang-format` file that defines the code style guidelines for consistent formatting across the codebase. You can automatically format your code according to these standards using your editor's formatting shortcut.
+
+### How to Use
+
+- **In Visual Studio (or compatible editors)**:
+  - Open the file you wish to format.
+  - Press `Ctrl + K`, then `Ctrl + D` (Windows) or `Cmd + K`, then `Cmd + D` (macOS) to auto-format the current file using the predefined style.
+
+This ensures consistency and improves code readability throughout the project.
+
+---
+
+*Note: This plugin is currently under development, and some features may not be fully implemented yet. Stay tuned for updates!*
