@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include <JuceHeader.h>
+#include <juce_audio_processors/juce_audio_processors.h>
 
+#include "Project.h"
 #include "Parameters.h"
-
 
 class PluginProcessor : public AudioProcessor, public AudioProcessorValueTreeState::Listener
 {

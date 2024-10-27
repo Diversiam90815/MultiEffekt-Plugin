@@ -1,38 +1,34 @@
-# PluginTemplate
+# Distortion Plugin
 
 ## Overview
 
-PluginTemplate is a C++ audio plugin project template that uses the [JUCE](https://juce.com/) framework. This template provides a starting point for developing audio plugins, including CMake build scripts and a Python script for automated building.
+**Plugin-Distortion** is an audio plugin developed in C++ using the [JUCE](https://juce.com/) framework. It applies various distortion effects to audio signals, allowing you to shape and enhance your sound. This plugin is currently under development.
+
 
 ## Features
 
-- **C++20 Standard**: Utilizes modern C++ features for efficient and robust code.
-- **JUCE Integration**: Seamlessly integrates the JUCE framework for audio plugin development.
-- **CMake Build System**: Cross-platform build configuration using CMake.
-- **Automated Build Script**: Python script to simplify the build and preparation process.
-- **Visual Studio Support**: Configured for building with Visual Studio 2019 or higher.
+- **Modern C++**: Leverages the C++20 standard for optimized and robust code.
+- **JUCE Framework Integration**: Offers seamless integration with JUCE for efficient audio plugin development.
+- **Unit Testing with GoogleTest**: Supports unit testing with the GoogleTest framework.
+- **Package Management with CPM**: Facilitates easy inclusion and installation of packages via CPM.
+- **Cross-Platform CMake Build System**: Uses CMake for consistent, cross-platform build configuration.
+- **Automated Build Script**: A Python script to simplify setup and build processes.
+- **Visual Studio Compatibility**: Configured for Visual Studio 2022, but can be adjusted in the Python script.
 
 ## Prerequisites
 
 - **CMake**: Version 3.25 or higher.
 - **Python**: Version 3.x (for running `build.py`).
-- **Visual Studio**: 2019 or higher (the project uses the Visual Studio 17 generator).
-- **JUCE Framework**: Included as a submodule in `submodules/JUCE`.
+- **Visual Studio**: 2022 (the project uses the Visual Studio 17 generator).
 
 ## Getting Started
 
 ### Cloning the Repository
 
-Clone the repository including its submodules:
+Clone the repository including:
 
 ```bash
-git clone --recurse-submodules https://github.com/Diversiam90815/Plugin-Template.git
-```
-
-If you've already cloned the repository without submodules, initialize them with:
-
-```bash
-git submodule update --init --recursive
+git clone https://github.com/Diversiam90815/Plugin-Template.git
 ```
 
 ### Build Instructions
@@ -93,80 +89,59 @@ In both cases, including the `--debug` or `-d` option switches the configuration
 
 ### Running the Plugin
 
-After a successful build, the Standalone application can be found in the build output directory. Navigate to:
+After a successful build, the application can be found in the build output directory. Currently, the audio plugin is set to build VST3 and standalone executable binaries. They can be found within the respective folder.
 
-```
-build/<Configuration>/PluginTemplate_Standalone.exe
-```
-
-Replace `<Configuration>` with `Release` or `Debug` depending on your build configuration.
 
 ## Project Structure
 
-- `Source/` - Contains the source code:
-  - `PluginProcessor.h/.cpp` - The main processing code for the plugin.
-  - `PluginEditor.h/.cpp` - The GUI editor for the plugin.
-  - `Parameters.h` - Definitions for plugin parameters.
-- `submodules/` - Contains the JUCE framework as a Git submodule.
-- `CMakeLists.txt` - The CMake build configuration file.
+- `cmake/` - Contains CMake files:
+  - `cpm.cmake` - Installing the currently latest version of CMake's package manager CPM into the Lib folder.
+
+- `plugin/` - Containing the JUCE audio plugin project.
+  - `CMakeLists.txt` - CMake project for the JUCE audio plugin.
+  - `source/` - Contains the source code:
+    - `PluginProcessor.cpp` - The main processing code for the plugin.
+    - `PluginEditor.cpp` - The GUI editor for the plugin.
+  - `include/` - Contains the include (header) files:
+    - `PluginProcessor.h` - The main processing code for the plugin.
+    - `PluginEditor.h` - The GUI editor for the plugin.
+    - `Parameters.h` - Definitions for plugin parameters.
+
+- `test/` - Containing the GoogleTest project.
+  - `CMakeLists.txt` - CMake project for the GoogleTest.
+  - `source/` - Contains the source code:
+    - `ProcessorTest.cpp` - A template for writing unit test for the PluginProcessor.
+    
+- `CMakeLists.txt` - The top-level CMake build configuration file.
 - `build.py` - Python script to automate build preparation and compilation.
+- `Project.h.in` - CMake configures this during compliation and sets project specific data that can be used project-wide.
+- `.clang-format` - Containing uniform format rules for the C++ code. See "Code Formatting with Clang-Format". 
 - `ReadMe.md` - Project documentation (this file).
 
-## CMake Configuration Details
-
-Key configurations in `CMakeLists.txt`:
-
-- **Project Setup**:
-  - Project name: `PluginTemplate`
-  - Version: `1.0`
-  - Language: `CXX` (C++)
-- **C++ Standard**: C++20
-- **JUCE Integration**:
-  - JUCE is added via `add_subdirectory(submodules/JUCE)`.
-  - The plugin is added using `juce_add_plugin` with:
-    - Company Name: `DiversiamProduction`
-    - Plugin Manufacturer Code: `3160`
-    - Plugin Code: `IOTO`
-    - Formats: `Standalone`
-    - Product Name: `${PROJECT_NAME}`
-- **Source Files**:
-  - Headers and source files are specified and grouped.
-- **Compiler Definitions**:
-  - Disables web browser and CURL support in JUCE to streamline the build.
-  - Sets various JUCE options for audio and media formats.
-  - Defines `ENV_DEVELOPMENT` and `_CRT_SECURE_NO_WARNINGS`.
-- **Compiler Options**:
-  - For Release configuration: `/Oi`, `/Gy` (enable intrinsic functions and function-level linking).
-  - For Debug configuration: `/Od`, `/Z7` (disable optimizations and enable debug information).
-  - General options: `/sdl`, `/MP` (enable additional security checks and multi-processor compilation).
-  - Warnings are not treated as errors (`/WX-`).
-  - Suppresses specific warnings: `C4146`, `C4996`.
-- **Linking Libraries**:
-  - Links against `juce_audio_utils`, `juce_audio_plugin_client`, and `juce_core`.
 
 ## Build Script (`build.py`) Details
 
-The `build.py` script simplifies the build process with the following features:
+The `build.py` script automates setup and compilation with several key features:
 
-- **Auto CWD Management**: Changes working directory automatically and restores it afterward.
-- **Command Execution**: Runs system commands and handles output and errors.
-- **Build Preparation**:
-  - Generates build files using CMake with the specified generator (`Visual Studio 17`).
-  - The `--debug` or `-d` option affects the configuration by setting the `TARGET_CONFIG` to `Debug` (default is `Release`).
-- **Build Execution**:
-  - Cleans previous builds if necessary.
-  - Builds the project using the generated build files.
+- **Automatic Directory Management**: Automatically switches to the correct working directory and restores it afterward.
+- **System Command Execution**: Runs system commands with error handling.
+- **Build Preparation**: Generates build files with CMake, using the specified generator (`Visual Studio 17`). The `--debug` option sets the `TARGET_CONFIG` to `Debug` (default is `Release`).
+- **Build Execution**: Option to clean previous builds and compile the project.
 - **Command-Line Arguments**:
   - `-p`, `--prepare`: Prepares the project for building or IDE usage.
-    - **Usage**: `python build.py --prepare` (for Release build)
-    - **Debug Build**: Include `--debug` to prepare for Debug build.
+    - Example: `python build.py --prepare` (Release build)
   - `-b`, `--build`: Builds the project.
-    - **Usage**: `python build.py --build` (for Release build)
-    - **Debug Build**: Include `--debug` to build in Debug mode.
-  - `-d`, `--debug`: Switches the configuration to Debug mode for both preparation and building.
-    - **Usage**: Can be combined with `--prepare` and/or `--build`.
+    - Example: `python build.py --build` (Release build)
+  - `-d`, `--debug`: Sets the configuration to Debug mode, usable with `--prepare` and `--build`.
+  - `-v`, `--version`: Prints the installed CMake and Python versions.
 
 ### Script Usage Examples
+
+- **Print out the current version of CMake and Python installed**:
+
+  ```bash
+  python build.py --version 
+  ```
 
 - **Prepare the Project for Release Build**:
 
@@ -227,22 +202,3 @@ You can customize the project by modifying:
 - **Plugin Information**: Update the company name, manufacturer code, plugin code, and product name in `CMakeLists.txt`.
 - **JUCE Modules**: Enable or disable JUCE modules as needed.
 - **Source Code**: Implement your plugin logic in `PluginProcessor.cpp` and design your GUI in `PluginEditor.cpp`.
-
-## Troubleshooting
-
-- **Missing Submodules**: If you encounter errors related to missing JUCE modules, ensure you've cloned the repository with submodules.
-- **CMake Errors**: Make sure you have the required CMake version (3.25 or higher).
-- **Compiler Errors**: Ensure you're using a compatible compiler (Visual Studio 2019 or higher) and that your environment is correctly set up.
-- **Incorrect Build Configuration**: If the build is not using the desired configuration (Debug or Release), ensure you're using the `--debug` or `-d` option appropriately.
-
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature/YourFeature`.
-3. Commit your changes: `git commit -am 'Add some feature'`.
-4. Push to the branch: `git push origin feature/YourFeature`.
-5. Submit a pull request.
-

@@ -31,6 +31,8 @@ class BuildRunner(object):
         parser.add_argument('-p', '--prepare', action='store_true', help='prepares the project for use with IDE')
         parser.add_argument('-d', '--debug', action='store_true', help='prepare or build debug version')
         parser.add_argument('-b', '--build', action='store_true', help='build the project')
+        parser.add_argument('-v', '--version', action='store_true', help='display Python and CMake versions')
+
 
         self.args = parser.parse_args()
        
@@ -72,6 +74,17 @@ class BuildRunner(object):
         return result
 
 
+    def _print_versions(self):
+        """ Print Python and CMake versions """
+        print("Python version:", sys.version)
+        try:
+            cmake_version = self._execute_command("cmake --version", "Get CMake version")
+            print("CMake version:", cmake_version.splitlines()[0])  # print only the first line of output
+        except Exception as e:
+            print(f"Error retrieving CMake version: {e}")
+
+
+
     def _build_prepare(self):
         projectfolderVS =  os.path.join(self.args.path_project)
         autoCWD = AutoCWD(projectfolderVS)
@@ -89,11 +102,13 @@ class BuildRunner(object):
         if os.path.exists(projectfolderVS + "/CMakeCache.txt"):
             self._execute_command("cmake --build " + projectfolderVS + " --target clean", "Run CMake clean")
         
-        self._execute_command("cmake --build " + buildFolder + " --config " + BuildRunner.TARGET_CONFIG + " --clean-first ", "Build the Distortion")   
+        self._execute_command("cmake --build " + buildFolder + " --config " + BuildRunner.TARGET_CONFIG + " --clean-first ", "Build CMake project")   
 
 
         
     def doit(self):
+        if self.args.version:
+            self._print_versions()
         if self.args.debug:
             BuildRunner.TARGET_CONFIG = 'Debug'
         if self.args.prepare:
