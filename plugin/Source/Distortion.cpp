@@ -65,7 +65,7 @@ void Distortion<SampleType>::process(const ProcessContext &context) noexcept
 
 	for (size_t channel = 0; channel < numChannels; ++channel)
 	{
-		auto *inputSamples = inputBlock.getChannelPointer(channel);
+		auto *inputSamples	= inputBlock.getChannelPointer(channel);
 		auto *outputSamples = outputBlock.getChannelPointer(channel);
 
 		for (size_t i = 0; i < numSamples; ++i)
@@ -122,38 +122,37 @@ void Distortion<SampleType>::setCurrentDistortionType(const DistortionType newTy
 template <typename SampleType>
 SampleType Distortion<SampleType>::processSoftClipping(SampleType inputSample)
 {
-	return inputSample;
+	return inputSample; // Not yet implemented
 }
 
 
 template <typename SampleType>
 SampleType Distortion<SampleType>::processHardClipping(SampleType inputSample)
 {
-	float wetSignal = inputSample * mDrive.getNextValue();
+	float wetSignal = inputSample * juce::Decibels::decibelsToGain(mDrive.getNextValue());
 
 	if (std::abs(wetSignal) > 0.99f)
 	{
-		wetSignal = 0.99 / std::abs(wetSignal);
+		wetSignal *= 0.99 / std::abs(wetSignal);
 	}
 
 	auto mix = (1.0 - mMix.getNextValue()) * inputSample + wetSignal * mMix.getNextValue();
 
-	return mix * mOutput.getNextValue();
+	return mix * juce::Decibels::decibelsToGain(mOutput.getNextValue());
 }
 
 
 template <typename SampleType>
 SampleType Distortion<SampleType>::processSaturation(SampleType inputSample)
 {
-	float wetSignal = inputSample * mDrive.getNextValue();
+	float wetSignal = inputSample * juce::Decibels::decibelsToGain(mDrive.getNextValue());
 
 	// Apply distortion (arctangent function)
-	inputSample = (2.0f / juce::MathConstants<float>::pi) * atan(inputSample);
+	inputSample		= (2.0f / juce::MathConstants<float>::pi) * atan(inputSample);
 
-	auto mix	= (1.0 - mMix.getNextValue()) * inputSample + wetSignal * mMix.getNextValue();
+	auto mix		= (1.0 - mMix.getNextValue()) * inputSample + wetSignal * mMix.getNextValue();
 
-	return mix * mOutput.getNextValue();
-
+	return mix * juce::Decibels::decibelsToGain(mOutput.getNextValue());
 }
 
 
