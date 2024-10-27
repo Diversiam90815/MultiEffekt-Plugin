@@ -28,7 +28,7 @@
 Clone the repository including:
 
 ```bash
-git clone https://github.com/Diversiam90815/Plugin-Template.git
+git clone https://github.com/Diversiam90815/Plugin-Distortion.git
 ```
 
 ### Build Instructions
