@@ -38,11 +38,11 @@ git clone https://github.com/Diversiam90815/Plugin-Template.git
 Before building the project, you need to generate the necessary build files using CMake. This can be done using the `build.py` script with the `--prepare` or `-p` option.
 
 ```bash
-cd PluginTemplate
+cd Plugin-Distortion
 python build.py --prepare
 ```
 
-**Note**: By default, this prepares the project for a Release build. If you wish to prepare for a Debug build, include the `--debug` or `-d` option:
+For a **Debug** build, add the `--debug` or `-d` option:
 
 ```bash
 python build.py --prepare --debug
