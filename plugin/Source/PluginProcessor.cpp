@@ -244,19 +244,6 @@ void PluginProcessor::parameterChanged(const juce::String &parameterID, float ne
 }
 
 
-DistortionType PluginProcessor::getCurrentDistortionType() const
-{
-	return mDistortionType;
-}
-
-
-void PluginProcessor::setCurrentDistortionType(const DistortionType newType)
-{
-	if (mDistortionType != newType)
-	{
-		mDistortionType = newType;
-	}
-}
 
 
 juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
@@ -264,59 +251,3 @@ juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 	return new PluginProcessor();
 }
 
-
-template <typename SampleType>
-SampleType PluginProcessor::processSoftClipping(SampleType sample)
-{
-	return input;
-}
-
-
-template <typename SampleType>
-SampleType PluginProcessor::processHardClipping(SampleType input)
-{
-	if (std::abs(input) > 0.99f)
-	{
-		input = 0.99 / std::abs(input);
-	}
-
-	return input;
-}
-
-
-template <typename SampleType>
-SampleType PluginProcessor::processSaturation(SampleType input)
-{
-	// Apply distortion (arctangent function)
-	 input = (2.0f / juce::MathConstants<float>::pi) * atan(input);
-
-	return input;
-}
-
-
-template <typename SampleType>
-SampleType PluginProcessor::processSample(SampleType input) noexcept
-{
-	switch (getCurrentDistortionType())
-	{
-	case DistortionType::hardClipping:
-	{
-		return processHardClipping(input);
-		break;
-	}
-
-	case DistortionType::softClipping:
-	{
-		return processSoftClipping(input);
-		break;
-	}
-
-	case DistortionType::saturation:
-	{
-		return processSaturation(input);
-		break;
-	}
-
-	default: break;
-	}
-}

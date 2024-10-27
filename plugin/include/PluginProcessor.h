@@ -29,9 +29,6 @@ public:
 
 	void												parameterChanged(const juce::String &parameterID, float newValue) override;
 
-	DistortionType										getCurrentDistortionType() const;
-	void												setCurrentDistortionType(const DistortionType newType);
-
 
 	//==============================================================================
 	//						PUBLIC METHODS - JUCE OVERRIDES
@@ -77,21 +74,6 @@ public:
 
 
 private:
-	//==============================================================================
-	//						PRIVATE METHODS
-	//==============================================================================
-	template <typename SampleType>
-	SampleType processSoftClipping(SampleType input);
-
-	template <typename SampleType>
-	SampleType processHardClipping(SampleType input);
-
-	template <typename SampleType>
-	SampleType processSaturation(SampleType input);
-
-	template <typename SampleType>
-	SampleType						   processSample(SampleType input) noexcept;
-
 
 	//==============================================================================
 	//						PRIVATE OBJECTS
@@ -101,8 +83,6 @@ private:
 	float							   input;
 	float							   output;
 	float							   blend;
-
-	std::atomic<DistortionType>		   mDistortionType;
 
 	Distortion<float>				   mDistortionModule;
 
