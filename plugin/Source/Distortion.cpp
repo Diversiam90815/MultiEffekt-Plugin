@@ -10,6 +10,11 @@ template <typename SampleType>
 void Distortion<SampleType>::prepare(juce::dsp::ProcessSpec &spec)
 {
 	mSampleRate = spec.sampleRate;
+
+	mDCFilter.prepare(spec);
+	mDCFilter.setCutoffFrequency(10.0);
+	mDCFilter.setType(juce::dsp::LinkwitzRileyFilter<float>::Type::highpass);
+
 	reset();
 }
 
@@ -69,7 +74,9 @@ void Distortion<SampleType>::process(const ProcessContext &context) noexcept
 		auto *outputSamples = outputBlock.getChannelPointer(channel);
 
 		for (size_t i = 0; i < numSamples; ++i)
+		{
 			outputSamples[i] = processSample(inputSamples[i]);
+		}
 	}
 }
 
