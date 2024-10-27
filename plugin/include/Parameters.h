@@ -28,3 +28,16 @@ constexpr auto	paramBlend		   = "drywet";
 constexpr float blendMinValue	   = 0.0f;
 constexpr float blendMaxValue	   = 100.0f;
 constexpr float blendDefaultValue  = 0.0f;
+
+
+
+//==============================================================================
+//						ENUM
+//==============================================================================
+
+enum DistortionType
+{
+	hardClipping = 1,
+	softClipping,
+	saturation
+};
