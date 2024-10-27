@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 3.25)
 
-project(AudioPlugin VERSION 0.1.0)
+project(Distortion VERSION 0.1.0)
 
 
 #-----------------------------------------------------------------------------------------
@@ -133,4 +133,5 @@ target_compile_options(${PROJECT_NAME} PRIVATE
         /wd4146  # Suppress warning C4146
         ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
         ${DEFAULT_CXX_EXCEPTION_HANDLING}
+        _CRT_SECURE_NO_WARNINGS
 )

@@ -8,9 +8,9 @@ PluginProcessor::PluginProcessor()
 	: AudioProcessor(BusesProperties()
 #if !JucePlugin_IsMidiEffect
 #if !JucePlugin_IsSynth
-						 .withInput("Input", AudioChannelSet::stereo(), true)
+						 .withInput("Input", juce::AudioChannelSet::stereo(), true)
 #endif
-						 .withOutput("Output", AudioChannelSet::stereo(), true)
+						 .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
 						 ),
 	  mValueTreeState(*this, nullptr, "PARAMETERS", createParameterLayout())
@@ -32,7 +32,7 @@ PluginProcessor::~PluginProcessor()
 }
 
 
-const String PluginProcessor::getName() const
+const juce::String PluginProcessor::getName() const
 {
 	return JucePlugin_Name;
 }
@@ -90,13 +90,13 @@ void PluginProcessor::setCurrentProgram(int index)
 }
 
 
-const String PluginProcessor::getProgramName(int index)
+const juce::String PluginProcessor::getProgramName(int index)
 {
 	return {};
 }
 
 
-void PluginProcessor::changeProgramName(int index, const String &newName)
+void PluginProcessor::changeProgramName(int index, const juce::String &newName)
 {
 }
 
@@ -104,10 +104,10 @@ void PluginProcessor::changeProgramName(int index, const String &newName)
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
 	// Set the initial values of the parameters
-	input  = Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramInput)->load());
-	drive  = Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramDrive)->load());
-	output = Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramOutput)->load());
-	blend  = jmap(mValueTreeState.getRawParameterValue(paramBlend)->load(), 0.0f, 100.0f, 0.0f, 1.0f);
+	input  = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramInput)->load());
+	drive  = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramDrive)->load());
+	output = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramOutput)->load());
+	blend  = juce::jmap(mValueTreeState.getRawParameterValue(paramBlend)->load(), 0.0f, 100.0f, 0.0f, 1.0f);
 }
 
 
@@ -123,7 +123,7 @@ bool PluginProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const
 	ignoreUnused(layouts);
 	return true;
 #else
-	if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono() && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
+	if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono() && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
 		return false;
 
 #if !JucePlugin_IsSynth
@@ -137,11 +137,11 @@ bool PluginProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const
 #endif
 
 
-void PluginProcessor::processBlock(AudioBuffer<float> &buffer, MidiBuffer &midiMessages)
+void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midiMessages)
 {
-	ignoreUnused(midiMessages);
+	juce::ignoreUnused(midiMessages);
 
-	ScopedNoDenormals noDenormals;
+	juce::ScopedNoDenormals noDenormals;
 	auto			  totalNumInputChannels	 = getTotalNumInputChannels();
 	auto			  totalNumOutputChannels = getTotalNumOutputChannels();
 
@@ -164,7 +164,7 @@ void PluginProcessor::processBlock(AudioBuffer<float> &buffer, MidiBuffer &midiM
 			channelData[sample]	  = std::tanh(drive * channelData[sample]);
 
 			// Apply distortion (arctangent function)
-			float distortedSignal = (2.0f / MathConstants<float>::pi) * atan(channelData[sample]);
+			float distortedSignal = (2.0f / juce::MathConstants<float>::pi) * atan(channelData[sample]);
 
 			// Blend between distorted and clean signal
 			channelData[sample]	  = (blend * distortedSignal + (1.0f - blend) * cleanSignal) * output;
@@ -179,16 +179,16 @@ bool PluginProcessor::hasEditor() const
 }
 
 
-AudioProcessorEditor *PluginProcessor::createEditor()
+juce::AudioProcessorEditor *PluginProcessor::createEditor()
 {
 	// We create a generic audio processor editor here, so we can work with the processing
 	// without concerning about the UI at first!
 
-	return new GenericAudioProcessorEditor(*this);
+	return new juce::GenericAudioProcessorEditor(*this);
 }
 
 
-void PluginProcessor::getStateInformation(MemoryBlock &destData)
+void PluginProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
 }
 
@@ -198,15 +198,15 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes)
 }
 
 
-AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLayout()
+juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLayout()
 {
-	std::vector<std::unique_ptr<RangedAudioParameter>> params;
+	std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
 
 	// add parameters here
-	auto											   input  = std::make_unique<AudioParameterFloat>(paramInput, inputGainName, inputMinValue, inputMaxValue, inputDefaultValue);
-	auto											   output = std::make_unique<AudioParameterFloat>(paramOutput, outputName, outputMinValue, outputMaxValue, outputDefaultValue);
-	auto											   drive  = std::make_unique<AudioParameterFloat>(paramDrive, driveName, driveMinValue, driveMaxValue, driveDefaultValue);
-	auto											   blend  = std::make_unique<AudioParameterFloat>(paramBlend, blendName, blendMinValue, blendMaxValue, blendDefaultValue);
+	auto input	= std::make_unique<juce::AudioParameterFloat>(paramInput, inputGainName, inputMinValue, inputMaxValue, inputDefaultValue);
+	auto output = std::make_unique<juce::AudioParameterFloat>(paramOutput, outputName, outputMinValue, outputMaxValue, outputDefaultValue);
+	auto drive	= std::make_unique<juce::AudioParameterFloat>(paramDrive, driveName, driveMinValue, driveMaxValue, driveDefaultValue);
+	auto blend	= std::make_unique<juce::AudioParameterFloat>(paramBlend, blendName, blendMinValue, blendMaxValue, blendDefaultValue);
 
 	params.push_back(std::move(input));
 	params.push_back(std::move(output));
@@ -217,31 +217,31 @@ AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLa
 }
 
 
-void PluginProcessor::parameterChanged(const String &parameterID, float newValue)
+void PluginProcessor::parameterChanged(const juce::String &parameterID, float newValue)
 {
 	if (parameterID == paramInput)
 	{
-		input = Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramInput)->load());
+		input = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramInput)->load());
 	}
 
 	else if (parameterID == paramDrive)
 	{
-		drive = Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramDrive)->load());
+		drive = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramDrive)->load());
 	}
 
 	else if (parameterID == paramOutput)
 	{
-		output = Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramOutput)->load());
+		output = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramOutput)->load());
 	}
 
 	else if (parameterID == paramBlend)
 	{
-		blend = jmap(mValueTreeState.getRawParameterValue(paramBlend)->load(), 0.0f, 100.0f, 0.0f, 1.0f);
+		blend = juce::jmap(mValueTreeState.getRawParameterValue(paramBlend)->load(), 0.0f, 100.0f, 0.0f, 1.0f);
 	}
 }
 
 
-AudioProcessor *JUCE_CALLTYPE createPluginFilter()
+juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 {
 	return new PluginProcessor();
 }

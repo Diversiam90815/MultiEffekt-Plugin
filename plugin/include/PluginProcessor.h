@@ -6,7 +6,7 @@
 #include "Project.h"
 #include "Parameters.h"
 
-class PluginProcessor : public AudioProcessor, public AudioProcessorValueTreeState::Listener
+class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
 {
 public:
 	//==============================================================================
@@ -22,9 +22,9 @@ public:
 	//						PUBLIC METHODS
 	//==============================================================================
 
-	AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+	juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
-	void										  parameterChanged(const String &parameterID, float newValue) override;
+	void												parameterChanged(const juce::String &parameterID, float newValue) override;
 
 
 	//==============================================================================
@@ -39,13 +39,13 @@ public:
 	bool isBusesLayoutSupported(const BusesLayout &layouts) const override;
 #endif
 
-	void				  processBlock(AudioBuffer<float> &, MidiBuffer &) override;
+	void				  processBlock(juce::AudioBuffer<float> &, juce::MidiBuffer &) override;
 
-	AudioProcessorEditor *createEditor() override;
+	juce::AudioProcessorEditor *createEditor() override;
 
 	bool				  hasEditor() const override;
 
-	const String		  getName() const override;
+	const juce::String			getName() const override;
 
 	bool				  acceptsMidi() const override;
 
@@ -61,11 +61,11 @@ public:
 
 	void				  setCurrentProgram(int index) override;
 
-	const String		  getProgramName(int index) override;
+	const juce::String			getProgramName(int index) override;
 
-	void				  changeProgramName(int index, const String &newName) override;
+	void						changeProgramName(int index, const juce::String &newName) override;
 
-	void				  getStateInformation(MemoryBlock &destData) override;
+	void						getStateInformation(juce::MemoryBlock &destData) override;
 
 	void				  setStateInformation(const void *data, int sizeInBytes) override;
 
@@ -81,7 +81,7 @@ private:
 	float						 blend;
 
 
-	AudioProcessorValueTreeState mValueTreeState;
+	juce::AudioProcessorValueTreeState mValueTreeState;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginProcessor)
 };

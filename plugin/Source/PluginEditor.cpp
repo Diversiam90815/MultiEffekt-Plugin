@@ -3,7 +3,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-PluginEditor::PluginEditor(PluginProcessor &p) : AudioProcessorEditor(&p), audioProcessor(p)
+PluginEditor::PluginEditor(PluginProcessor &p) : juce::AudioProcessorEditor(&p), audioProcessor(p)
 {
 	setSize(400, 300);
 }
@@ -15,13 +15,13 @@ PluginEditor::~PluginEditor()
 
 
 //==============================================================================
-void PluginEditor::paint(Graphics &g)
+void PluginEditor::paint(juce::Graphics &g)
 {
-	g.fillAll(getLookAndFeel().findColour(ResizableWindow::backgroundColourId));
+	g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 
-	g.setColour(Colours::white);
-	g.setFont(FontOptions(15.0f));
-	g.drawFittedText("Hello World!", getLocalBounds(), Justification::centred, 1);
+	g.setColour(juce::Colours::white);
+	g.setFont(juce::FontOptions(15.0f));
+	g.drawFittedText("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 

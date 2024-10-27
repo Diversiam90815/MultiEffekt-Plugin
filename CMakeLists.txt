@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(ProjectTemplate LANGUAGES CXX)
+project(DistortionPlugin LANGUAGES CXX)
 
 set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR})
 
@@ -16,7 +16,7 @@ set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 include(cmake/cpm.cmake)
 
 ## Setting the environment
-add_compile_definitions(${PROJECT_NAME} PUBLIC -DENV_DEVELOPMENT)
+add_compile_definitions(${PROJECT_NAME} PRIVATE -DENV_DEVELOPMENT)
 
 
 #----------------------------
@@ -51,6 +51,11 @@ enable_testing()
 
 add_subdirectory(test)
 add_subdirectory(plugin)
+
+
+add_compile_options(${PROJECT_NAME} _CRT_SECURE_NO_WARNINGS
+JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED
+)
 
 
 if(MSVC)
