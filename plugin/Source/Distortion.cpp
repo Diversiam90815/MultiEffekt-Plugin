@@ -120,26 +120,30 @@ void Distortion<SampleType>::setCurrentDistortionType(const DistortionType newTy
 
 
 template <typename SampleType>
-SampleType Distortion<SampleType>::processSoftClipping(SampleType input)
+SampleType Distortion<SampleType>::processSoftClipping(SampleType inputSample)
 {
 	return input;
 }
 
 
 template <typename SampleType>
-SampleType Distortion<SampleType>::processHardClipping(SampleType input)
+SampleType Distortion<SampleType>::processHardClipping(SampleType inputSample)
 {
-	if (std::abs(input) > 0.99f)
+	float wetSignal = inputSample * mDrive.getNextValue();
+
+	if (std::abs(wetSignal) > 0.99f)
 	{
-		input = 0.99 / std::abs(input);
+		wetSignal = 0.99 / std::abs(wetSignal);
 	}
 
-	return input;
+	auto mix = (1.0 - mMix.getNextValue()) * inputSample + wetSignal * mMix.getNextValue();
+
+	return mix * mOutput.getNextValue();
 }
 
 
 template <typename SampleType>
-SampleType Distortion<SampleType>::processSaturation(SampleType input)
+SampleType Distortion<SampleType>::processSaturation(SampleType inputSample)
 {
 	// Apply distortion (arctangent function)
 	input = (2.0f / juce::MathConstants<float>::pi) * atan(input);

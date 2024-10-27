@@ -29,12 +29,11 @@ public:
 
 
 private:
+	SampleType					processSoftClipping(SampleType inputSample);
 
-	SampleType processSoftClipping(SampleType input);
+	SampleType					processHardClipping(SampleType inputSample);
 
-	SampleType processHardClipping(SampleType input);
-
-	SampleType processSaturation(SampleType input);
+	SampleType					processSaturation(SampleType inputSample);
 
 
 	juce::SmoothedValue<float>	mDrive;
