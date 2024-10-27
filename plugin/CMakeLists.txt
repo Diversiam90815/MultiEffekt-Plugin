@@ -116,6 +116,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
         JUCE_ASIO=0
         JUCE_USE_ANDROID_OBOE=1
         JUCE_USE_OBOE_STABILIZED_CALLBACK=1
+        _CRT_SECURE_NO_WARNINGS
 )
 
 ## Project compiler options
@@ -133,5 +134,4 @@ target_compile_options(${PROJECT_NAME} PRIVATE
         /wd4146  # Suppress warning C4146
         ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
         ${DEFAULT_CXX_EXCEPTION_HANDLING}
-        _CRT_SECURE_NO_WARNINGS
 )

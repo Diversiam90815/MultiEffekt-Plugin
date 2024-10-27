@@ -53,9 +53,7 @@ add_subdirectory(test)
 add_subdirectory(plugin)
 
 
-add_compile_options(${PROJECT_NAME} _CRT_SECURE_NO_WARNINGS
-JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED
-)
+add_compile_options(${PROJECT_NAME} JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED)
 
 
 if(MSVC)
