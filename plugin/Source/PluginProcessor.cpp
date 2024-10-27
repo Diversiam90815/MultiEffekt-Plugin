@@ -163,8 +163,11 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiB
 			// Apply hyperbolic tangent to simulate natural saturation at high gain
 			channelData[sample]	  = std::tanh(drive * channelData[sample]);
 
-			// Apply distortion (arctangent function)
-			float distortedSignal = (2.0f / juce::MathConstants<float>::pi) * atan(channelData[sample]);
+			// Apply the currently selected distortion
+			float distortedSignal = processSample(channelData[sample]);
+
+			//// Apply distortion (arctangent function)
+			// float distortedSignal = (2.0f / juce::MathConstants<float>::pi) * atan(channelData[sample]);
 
 			// Blend between distorted and clean signal
 			channelData[sample]	  = (blend * distortedSignal + (1.0f - blend) * cleanSignal) * output;
@@ -265,21 +268,29 @@ juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 template <typename SampleType>
 SampleType PluginProcessor::processSoftClipping(SampleType sample)
 {
-	return SampleType();
+	return input;
 }
 
 
 template <typename SampleType>
 SampleType PluginProcessor::processHardClipping(SampleType input)
 {
-	return SampleType();
+	if (std::abs(input) > 0.99f)
+	{
+		input = 0.99 / std::abs(input);
+	}
+
+	return input;
 }
 
 
 template <typename SampleType>
 SampleType PluginProcessor::processSaturation(SampleType input)
 {
-	return SampleType();
+	// Apply distortion (arctangent function)
+	 input = (2.0f / juce::MathConstants<float>::pi) * atan(input);
+
+	return input;
 }
 
 

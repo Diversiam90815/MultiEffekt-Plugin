@@ -15,9 +15,6 @@ set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 ## Include the CPM (Package Manager used by CMake)
 include(cmake/cpm.cmake)
 
-## Setting the environment
-add_compile_definitions(${PROJECT_NAME} PRIVATE -DENV_DEVELOPMENT)
-
 
 #----------------------------
 # Juce API

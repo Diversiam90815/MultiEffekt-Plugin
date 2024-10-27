@@ -40,13 +40,16 @@ configure_file(${CMAKE_SOURCE_DIR}/Project.h.in ${CMAKE_BINARY_DIR}/include/Proj
 set(Header_Files
         ${HEADER_FILES_DIR}/PluginProcessor.h
         ${HEADER_FILES_DIR}/PluginEditor.h
-        
+
+        ${HEADER_FILES_DIR}/Distortion.h
+
         ${HEADER_FILES_DIR}/Parameters.h
 )
 
 set(Source_Files
          ${SOURCE_FILES_DIR}/PluginProcessor.cpp
          ${SOURCE_FILES_DIR}/PluginEditor.cpp
+         ${SOURCE_FILES_DIR}/Distortion.cpp
 )
 
 

@@ -6,6 +6,9 @@
 #include "Project.h"
 #include "Parameters.h"
 
+#include "Distortion.h"
+
+
 class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
 {
 public:
@@ -101,6 +104,7 @@ private:
 
 	std::atomic<DistortionType>		   mDistortionType;
 
+	Distortion<float>				   mDistortionModule;
 
 	juce::AudioProcessorValueTreeState mValueTreeState;
 
