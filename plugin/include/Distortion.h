@@ -18,7 +18,7 @@ public:
 	template <typename ProcessContext>
 	void		   process(const ProcessContext &context) noexcept;
 
-	void		   processSample(SampleType input) noexcept;
+	SampleType	   processSample(SampleType input) noexcept;
 
 	void		   setDrive(SampleType newDrive);
 	void		   setMix(SampleType newMix);

@@ -75,7 +75,7 @@ void Distortion<SampleType>::process(const ProcessContext &context) noexcept
 
 
 template <typename SampleType>
-void Distortion<SampleType>::processSample(SampleType input) noexcept
+SampleType Distortion<SampleType>::processSample(SampleType input) noexcept
 {
 	switch (getCurrentDistortionType())
 	{
@@ -122,7 +122,7 @@ void Distortion<SampleType>::setCurrentDistortionType(const DistortionType newTy
 template <typename SampleType>
 SampleType Distortion<SampleType>::processSoftClipping(SampleType inputSample)
 {
-	return input;
+	return inputSample;
 }
 
 
@@ -145,10 +145,15 @@ SampleType Distortion<SampleType>::processHardClipping(SampleType inputSample)
 template <typename SampleType>
 SampleType Distortion<SampleType>::processSaturation(SampleType inputSample)
 {
-	// Apply distortion (arctangent function)
-	input = (2.0f / juce::MathConstants<float>::pi) * atan(input);
+	float wetSignal = inputSample * mDrive.getNextValue();
 
-	return input;
+	// Apply distortion (arctangent function)
+	inputSample = (2.0f / juce::MathConstants<float>::pi) * atan(inputSample);
+
+	auto mix	= (1.0 - mMix.getNextValue()) * inputSample + wetSignal * mMix.getNextValue();
+
+	return mix * mOutput.getNextValue();
+
 }
 
 
