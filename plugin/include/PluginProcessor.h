@@ -74,6 +74,8 @@ public:
 
 
 private:
+	
+	void updateParameters();
 
 	//==============================================================================
 	//						PRIVATE OBJECTS

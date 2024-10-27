@@ -108,6 +108,16 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 	drive  = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramDrive)->load());
 	output = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramOutput)->load());
 	blend  = juce::jmap(mValueTreeState.getRawParameterValue(paramBlend)->load(), 0.0f, 100.0f, 0.0f, 1.0f);
+
+	// Initialize spec for DSP modules
+	juce::dsp::ProcessSpec spec;
+	spec.maximumBlockSize = samplesPerBlock;
+	spec.sampleRate		  = sampleRate;
+	spec.numChannels	  = getTotalNumInputChannels();
+
+	mDistortionModule.prepare(spec);
+
+	updateParameters();
 }
 
 
@@ -148,31 +158,9 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiB
 	for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
 		buffer.clear(i, 0, buffer.getNumSamples());
 
-	for (int channel = 0; channel < totalNumInputChannels; ++channel)
-	{
-		auto *channelData = buffer.getWritePointer(channel);
-
-		for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-		{
-			// Store clean sample for later blend
-			float cleanSignal = channelData[sample];
-
-			// Apply input gain
-			channelData[sample] *= input;
-
-			// Apply hyperbolic tangent to simulate natural saturation at high gain
-			channelData[sample]	  = std::tanh(drive * channelData[sample]);
-
-			// Apply the currently selected distortion
-			float distortedSignal = processSample(channelData[sample]);
-
-			//// Apply distortion (arctangent function)
-			// float distortedSignal = (2.0f / juce::MathConstants<float>::pi) * atan(channelData[sample]);
-
-			// Blend between distorted and clean signal
-			channelData[sample]	  = (blend * distortedSignal + (1.0f - blend) * cleanSignal) * output;
-		}
-	}
+	// Processing the distortion
+	juce::dsp::AudioBlock<float> block{buffer};
+	mDistortionModule.process(juce::dsp::ProcessContextReplacing<float>(block));
 }
 
 
@@ -198,6 +186,14 @@ void PluginProcessor::getStateInformation(juce::MemoryBlock &destData)
 
 void PluginProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
+}
+
+
+void PluginProcessor::updateParameters()
+{
+	mDistortionModule.setDrive(mValueTreeState.getRawParameterValue(paramDrive)->load());
+	mDistortionModule.setOutput(mValueTreeState.getRawParameterValue(paramOutput)->load());
+	mDistortionModule.setMix(mValueTreeState.getRawParameterValue(paramBlend)->load());
 }
 
 
@@ -241,8 +237,9 @@ void PluginProcessor::parameterChanged(const juce::String &parameterID, float ne
 	{
 		blend = juce::jmap(mValueTreeState.getRawParameterValue(paramBlend)->load(), 0.0f, 100.0f, 0.0f, 1.0f);
 	}
-}
 
+	updateParameters();
+}
 
 
 
@@ -250,4 +247,3 @@ juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 {
 	return new PluginProcessor();
 }
-
