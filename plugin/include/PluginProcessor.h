@@ -74,17 +74,16 @@ public:
 
 
 private:
-	
-	void updateParameters();
+	void							   updateParameters();
 
 	//==============================================================================
 	//						PRIVATE OBJECTS
 	//==============================================================================
 
-	float							   drive;
-	float							   input;
-	float							   output;
-	float							   blend;
+	//float							   drive;
+	//float							   input;
+	//float							   output;
+	//float							   blend;
 
 	Distortion<float>				   mDistortionModule;
 

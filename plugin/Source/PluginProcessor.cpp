@@ -16,19 +16,21 @@ PluginProcessor::PluginProcessor()
 	  mValueTreeState(*this, nullptr, "PARAMETERS", createParameterLayout())
 #endif
 {
-	mValueTreeState.addParameterListener(paramInput, this);
+	//mValueTreeState.addParameterListener(paramInput, this);
 	mValueTreeState.addParameterListener(paramOutput, this);
 	mValueTreeState.addParameterListener(paramDrive, this);
 	mValueTreeState.addParameterListener(paramBlend, this);
+	mValueTreeState.addParameterListener(paramDistModel, this);
 }
 
 
 PluginProcessor::~PluginProcessor()
 {
-	mValueTreeState.removeParameterListener(paramInput, this);
+	//mValueTreeState.removeParameterListener(paramInput, this);
 	mValueTreeState.removeParameterListener(paramOutput, this);
 	mValueTreeState.removeParameterListener(paramDrive, this);
 	mValueTreeState.removeParameterListener(paramBlend, this);
+	mValueTreeState.removeParameterListener(paramDistModel, this);
 }
 
 
@@ -103,11 +105,11 @@ void PluginProcessor::changeProgramName(int index, const juce::String &newName)
 
 void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-	// Set the initial values of the parameters
-	input  = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramInput)->load());
-	drive  = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramDrive)->load());
-	output = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramOutput)->load());
-	blend  = juce::jmap(mValueTreeState.getRawParameterValue(paramBlend)->load(), 0.0f, 100.0f, 0.0f, 1.0f);
+	//// Set the initial values of the parameters
+	//input  = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramInput)->load());
+	//drive  = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramDrive)->load());
+	//output = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramOutput)->load());
+	//blend  = juce::jmap(mValueTreeState.getRawParameterValue(paramBlend)->load(), 0.0f, 100.0f, 0.0f, 1.0f);
 
 	// Initialize spec for DSP modules
 	juce::dsp::ProcessSpec spec;
@@ -194,6 +196,27 @@ void PluginProcessor::updateParameters()
 	mDistortionModule.setDrive(mValueTreeState.getRawParameterValue(paramDrive)->load());
 	mDistortionModule.setOutput(mValueTreeState.getRawParameterValue(paramOutput)->load());
 	mDistortionModule.setMix(mValueTreeState.getRawParameterValue(paramBlend)->load());
+
+	auto model = static_cast<int>(mValueTreeState.getRawParameterValue(paramDistModel)->load());
+	switch (model)
+	{
+	case 0:
+	{
+		mDistortionModule.setCurrentDistortionType(DistortionType::hardClipping);
+		break;
+	}
+	case 1:
+	{
+		mDistortionModule.setCurrentDistortionType(DistortionType::softClipping);
+		break;
+	}
+	case 2:
+	{
+		mDistortionModule.setCurrentDistortionType(DistortionType::saturation);
+		break;
+	}
+	default: break;
+	}
 }
 
 
@@ -202,15 +225,17 @@ juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParam
 	std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
 
 	// add parameters here
-	auto input	= std::make_unique<juce::AudioParameterFloat>(paramInput, inputGainName, inputMinValue, inputMaxValue, inputDefaultValue);
-	auto output = std::make_unique<juce::AudioParameterFloat>(paramOutput, outputName, outputMinValue, outputMaxValue, outputDefaultValue);
-	auto drive	= std::make_unique<juce::AudioParameterFloat>(paramDrive, driveName, driveMinValue, driveMaxValue, driveDefaultValue);
-	auto blend	= std::make_unique<juce::AudioParameterFloat>(paramBlend, blendName, blendMinValue, blendMaxValue, blendDefaultValue);
+	//auto input	   = std::make_unique<juce::AudioParameterFloat>(paramInput, inputGainName, inputMinValue, inputMaxValue, inputDefaultValue);
+	auto output	   = std::make_unique<juce::AudioParameterFloat>(paramOutput, outputName, outputMinValue, outputMaxValue, outputDefaultValue);
+	auto drive	   = std::make_unique<juce::AudioParameterFloat>(paramDrive, driveName, driveMinValue, driveMaxValue, driveDefaultValue);
+	auto blend	   = std::make_unique<juce::AudioParameterFloat>(paramBlend, blendName, blendMinValue, blendMaxValue, blendDefaultValue);
+	auto distModel = std::make_unique<juce::AudioParameterChoice>(paramDistModel, distModelName, distModelsArray, 0);
 
-	params.push_back(std::move(input));
+	//params.push_back(std::move(input));
 	params.push_back(std::move(output));
 	params.push_back(std::move(drive));
 	params.push_back(std::move(blend));
+	params.push_back(std::move(distModel));
 
 	return {params.begin(), params.end()};
 }
@@ -218,25 +243,25 @@ juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParam
 
 void PluginProcessor::parameterChanged(const juce::String &parameterID, float newValue)
 {
-	if (parameterID == paramInput)
-	{
-		input = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramInput)->load());
-	}
+	//if (parameterID == paramInput)
+	//{
+	//	input = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramInput)->load());
+	//}
 
-	else if (parameterID == paramDrive)
-	{
-		drive = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramDrive)->load());
-	}
+	//else if (parameterID == paramDrive)
+	//{
+	//	drive = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramDrive)->load());
+	//}
 
-	else if (parameterID == paramOutput)
-	{
-		output = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramOutput)->load());
-	}
+	//else if (parameterID == paramOutput)
+	//{
+	//	output = juce::Decibels::decibelsToGain(mValueTreeState.getRawParameterValue(paramOutput)->load());
+	//}
 
-	else if (parameterID == paramBlend)
-	{
-		blend = juce::jmap(mValueTreeState.getRawParameterValue(paramBlend)->load(), 0.0f, 100.0f, 0.0f, 1.0f);
-	}
+	//else if (parameterID == paramBlend)
+	//{
+	//	blend = juce::jmap(mValueTreeState.getRawParameterValue(paramBlend)->load(), 0.0f, 100.0f, 0.0f, 1.0f);
+	//}
 
 	updateParameters();
 }

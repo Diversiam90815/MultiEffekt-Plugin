@@ -11,9 +11,9 @@ void Distortion<SampleType>::prepare(juce::dsp::ProcessSpec &spec)
 {
 	mSampleRate = spec.sampleRate;
 
-	mDCFilter.prepare(spec);
-	mDCFilter.setCutoffFrequency(10.0);
-	mDCFilter.setType(juce::dsp::LinkwitzRileyFilter<float>::Type::highpass);
+	//mDCFilter.prepare(spec);
+	//mDCFilter.setCutoffFrequency(10.0);
+	//mDCFilter.setType(juce::dsp::LinkwitzRileyFilter<float>::Type::highpass);
 
 	reset();
 }
@@ -129,37 +129,52 @@ void Distortion<SampleType>::setCurrentDistortionType(const DistortionType newTy
 template <typename SampleType>
 SampleType Distortion<SampleType>::processSoftClipping(SampleType inputSample)
 {
-	return inputSample; // Not yet implemented
+	// Get the next values once per sample
+	auto  driveValue  = mDrive.getNextValue();
+	auto  mixValue	  = mMix.getNextValue();
+	auto  outputValue = mOutput.getNextValue();
+
+	float wetSignal	  = inputSample * juce::Decibels::decibelsToGain(mDrive.getNextValue());
+
+	// Apply distortion (arctangent function)
+	wetSignal		  = mSoftClipperCoefficient * std::atan(wetSignal);
+
+	auto mix		  = (1.0 - mMix.getNextValue()) * inputSample + wetSignal * mMix.getNextValue();
+
+	return mix * juce::Decibels::decibelsToGain(mOutput.getNextValue());
 }
 
 
 template <typename SampleType>
 SampleType Distortion<SampleType>::processHardClipping(SampleType inputSample)
 {
-	float wetSignal = inputSample * juce::Decibels::decibelsToGain(mDrive.getNextValue());
+	// Get the next values once per sample
+	auto	   driveValue  = mDrive.getNextValue();
+	auto	   mixValue	   = mMix.getNextValue();
+	auto	   outputValue = mOutput.getNextValue();
 
-	if (std::abs(wetSignal) > 0.99f)
+	// Apply drive gain
+	auto	   gain		   = juce::Decibels::decibelsToGain(driveValue);
+	SampleType wetSignal   = inputSample * gain;
+
+	// Hard clipping
+	if (std::abs(wetSignal) > 0.99)
 	{
 		wetSignal *= 0.99 / std::abs(wetSignal);
 	}
 
-	auto mix = (1.0 - mMix.getNextValue()) * inputSample + wetSignal * mMix.getNextValue();
+	// Mix dry and wet signals
+	auto mix = (1.0 - mixValue) * inputSample + wetSignal * mixValue;
 
-	return mix * juce::Decibels::decibelsToGain(mOutput.getNextValue());
+	// Apply output gain
+	return mix * juce::Decibels::decibelsToGain(outputValue);
 }
 
 
 template <typename SampleType>
 SampleType Distortion<SampleType>::processSaturation(SampleType inputSample)
 {
-	float wetSignal = inputSample * juce::Decibels::decibelsToGain(mDrive.getNextValue());
-
-	// Apply distortion (arctangent function)
-	inputSample		= (2.0f / juce::MathConstants<float>::pi) * atan(inputSample);
-
-	auto mix		= (1.0 - mMix.getNextValue()) * inputSample + wetSignal * mMix.getNextValue();
-
-	return mix * juce::Decibels::decibelsToGain(mOutput.getNextValue());
+	return inputSample;
 }
 
 
@@ -167,3 +182,7 @@ SampleType Distortion<SampleType>::processSaturation(SampleType inputSample)
 // Declare Distortion Template Classes that may be used
 template class Distortion<float>;
 template class Distortion<double>;
+
+// Explicit instantiation of member function templates
+template void Distortion<float>::process<juce::dsp::ProcessContextReplacing<float>>(const juce::dsp::ProcessContextReplacing<float> &) noexcept;
+template void Distortion<double>::process<juce::dsp::ProcessContextReplacing<double>>(const juce::dsp::ProcessContextReplacing<double> &) noexcept;

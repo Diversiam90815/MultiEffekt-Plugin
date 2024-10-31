@@ -29,20 +29,22 @@ public:
 
 
 private:
-	SampleType					processSoftClipping(SampleType inputSample);
+	SampleType							  processSoftClipping(SampleType inputSample);
 
-	SampleType					processHardClipping(SampleType inputSample);
+	SampleType							  processHardClipping(SampleType inputSample);
 
-	SampleType					processSaturation(SampleType inputSample);
+	SampleType							  processSaturation(SampleType inputSample);
 
 
-	juce::dsp::LinkwitzRileyFilter<float> mDCFilter;
+	//juce::dsp::LinkwitzRileyFilter<float> mDCFilter;
 
-	juce::SmoothedValue<float>	mDrive;
-	juce::SmoothedValue<float>	mMix;
-	juce::SmoothedValue<float>	mOutput;
+	juce::SmoothedValue<float>			  mDrive;
+	juce::SmoothedValue<float>			  mMix;
+	juce::SmoothedValue<float>			  mOutput;
 
-	std::atomic<DistortionType> mDistortionType;
+	std::atomic<DistortionType>			  mDistortionType;
 
-	float						mSampleRate = 0;
+	float								  mSampleRate			  = 0;
+
+	const float							  mSoftClipperCoefficient = (2.0 / juce::MathConstants<float>::pi);
 };
