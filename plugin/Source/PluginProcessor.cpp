@@ -47,7 +47,7 @@ bool PluginProcessor::acceptsMidi() const
 	return false;
 #endif
 }
-
+ 
 
 bool PluginProcessor::producesMidi() const
 {

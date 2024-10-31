@@ -36,7 +36,7 @@ private:
 	SampleType							  processSaturation(SampleType inputSample);
 
 
-	//juce::dsp::LinkwitzRileyFilter<float> mDCFilter;
+	juce::dsp::LinkwitzRileyFilter<float> mDCFilter;
 
 	juce::SmoothedValue<float>			  mDrive;
 	juce::SmoothedValue<float>			  mMix;

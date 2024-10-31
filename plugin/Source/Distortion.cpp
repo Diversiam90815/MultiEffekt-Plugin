@@ -11,9 +11,9 @@ void Distortion<SampleType>::prepare(juce::dsp::ProcessSpec &spec)
 {
 	mSampleRate = spec.sampleRate;
 
-	//mDCFilter.prepare(spec);
-	//mDCFilter.setCutoffFrequency(10.0);
-	//mDCFilter.setType(juce::dsp::LinkwitzRileyFilter<float>::Type::highpass);
+	mDCFilter.prepare(spec);
+	mDCFilter.setCutoffFrequency(10.0);
+	mDCFilter.setType(juce::dsp::LinkwitzRileyFilter<float>::Type::highpass);
 
 	reset();
 }
@@ -75,6 +75,7 @@ void Distortion<SampleType>::process(const ProcessContext &context) noexcept
 
 		for (size_t i = 0; i < numSamples; ++i)
 		{
+			outputSamples[i] = mDCFilter.processSample(channel, outputSamples[i]);
 			outputSamples[i] = processSample(inputSamples[i]);
 		}
 	}
@@ -139,9 +140,9 @@ SampleType Distortion<SampleType>::processSoftClipping(SampleType inputSample)
 	// Apply distortion (arctangent function)
 	wetSignal		  = mSoftClipperCoefficient * std::atan(wetSignal);
 
-	auto mix		  = (1.0 - mMix.getNextValue()) * inputSample + wetSignal * mMix.getNextValue();
+	auto mix		  = (1.0 - mixValue) * inputSample + wetSignal * mixValue;
 
-	return mix * juce::Decibels::decibelsToGain(mOutput.getNextValue());
+	return mix * juce::Decibels::decibelsToGain(outputValue);
 }
 
 
@@ -174,7 +175,27 @@ SampleType Distortion<SampleType>::processHardClipping(SampleType inputSample)
 template <typename SampleType>
 SampleType Distortion<SampleType>::processSaturation(SampleType inputSample)
 {
-	return inputSample;
+	// Get the next values once per sample
+	auto  driveValue  = mDrive.getNextValue();
+	auto  mixValue	  = mMix.getNextValue();
+	auto  outputValue = mOutput.getNextValue();
+
+	auto  drive		  = juce::jmap(driveValue, 0.0f, 24.0f, 0.0f, 6.0f);
+
+	float wetSignal	  = inputSample * juce::Decibels::decibelsToGain(drive);
+
+	if (wetSignal >= 0.0)
+	{
+		wetSignal = std::tanh(wetSignal);
+	}
+	else
+	{
+		wetSignal = std::tanh(std::sinh(wetSignal)) - 0.2 * wetSignal * std::sin(juce::MathConstants<float>::pi * wetSignal);
+	}
+
+	auto mix = (1.0 - mixValue) * inputSample + wetSignal * mixValue;
+
+	return mix * juce::Decibels::decibelsToGain(outputValue);
 }
 
 
