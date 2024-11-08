@@ -12,9 +12,10 @@ CircularBuffer::~CircularBuffer()
 }
 
 
-void CircularBuffer::prepare(double sampleRate, int numSamples, int numChannels)
+void CircularBuffer::prepare(double sampleRate, int numSamples, int numChannels, int bufferLengthInSeconds)
 {
 	mNumChannels				 = numChannels;
+	mSizeOfBufferInSeconds		 = bufferLengthInSeconds;
 
 	const int circularBufferSize = mSizeOfBufferInSeconds * (sampleRate * numSamples);
 	mCircularBuffer.setSize(numChannels, circularBufferSize);
@@ -43,12 +44,12 @@ void CircularBuffer::copyFromBufferToCircularBuffer(juce::AudioBuffer<float> &bu
 			// Copy remaining samples to buffer
 			mCircularBuffer.copyFrom(channel, mWritePosition, bufferData, bufferRemain);
 
-			// Fill up the circular buffer 
+			// Fill up the circular buffer
 			mCircularBuffer.copyFrom(channel, 0, bufferData, bufferLength - bufferRemain);
 		}
 
 		mWritePosition += bufferLength;
-		mWritePosition %= circularBufferLength;		
+		mWritePosition %= circularBufferLength;
 	}
 }
 

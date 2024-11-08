@@ -10,9 +10,9 @@ public:
 	CircularBuffer();
 	~CircularBuffer();
 
-	void prepare(double sampleRate, int numSamples, int numChannels);
+	void					 prepare(double sampleRate, int numSamples, int numChannels, int bufferLengthInSeconds);
 
-	void copyFromBufferToCircularBuffer(juce::AudioBuffer<float> &buffer);
+	void					 copyFromBufferToCircularBuffer(juce::AudioBuffer<float> &buffer);
 
 	juce::AudioBuffer<float> getBuffer();
 
@@ -21,5 +21,5 @@ private:
 
 	int						 mNumChannels{0};			 // Set in prepare()
 	int						 mWritePosition{0};
-	int						 mSizeOfBufferInSeconds = 2; // Buffer will be size of 2s of audio samples
+	int						 mSizeOfBufferInSeconds = 2; // number of seconds the buffer will be in size of
 };
