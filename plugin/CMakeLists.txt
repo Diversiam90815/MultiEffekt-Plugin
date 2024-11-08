@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 3.25)
 
-project(Distortion VERSION 0.1.0)
+project(MultiEffectPlugin VERSION 0.1.0)
 
 
 #-----------------------------------------------------------------------------------------
@@ -44,12 +44,14 @@ set(Header_Files
         ${HEADER_FILES_DIR}/Distortion.h
 
         ${HEADER_FILES_DIR}/Parameters.h
+        ${HEADER_FILES_DIR}/CircularBuffer.h
 )
 
 set(Source_Files
          ${SOURCE_FILES_DIR}/PluginProcessor.cpp
          ${SOURCE_FILES_DIR}/PluginEditor.cpp
          ${SOURCE_FILES_DIR}/Distortion.cpp
+         ${SOURCE_FILES_DIR}/CircularBuffer.cpp
 )
 
 
