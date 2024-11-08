@@ -17,7 +17,7 @@ void CircularBuffer::prepare(double sampleRate, int numSamples, int numChannels,
 	mNumChannels				 = numChannels;
 	mSizeOfBufferInSeconds		 = bufferLengthInSeconds;
 
-	const int circularBufferSize = mSizeOfBufferInSeconds * (sampleRate * numSamples);
+	const int circularBufferSize = mSizeOfBufferInSeconds * (sampleRate + numSamples);
 	mCircularBuffer.setSize(numChannels, circularBufferSize);
 }
 
