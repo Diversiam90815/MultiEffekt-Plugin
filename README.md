@@ -1,9 +1,15 @@
-# Distortion Plugin
+# MultiEffekt-Plugin
 
 ## Overview
 
-**Plugin-Distortion** is an audio plugin developed in C++ using the [JUCE](https://juce.com/) framework. It applies various distortion effects to audio signals, allowing you to shape and enhance your sound. This plugin is currently under development.
+**MultiEffekt-Plugin** is an audio plugin developed in C++ using the [JUCE](https://juce.com/) framework. The goal is to access multiple effects inside a single plugin in any desired order, allowing you to shape and enhance your sound. This plugin is currently under development.
 
+
+## Effects
+- **Distortion**: Multiple distortion type to select from: Saturation, Hard & Soft Clipping.
+- **Delay** (in development)
+- **Reverb** (in development)
+- **Gain** (in development)
 
 ## Features
 
@@ -28,7 +34,7 @@
 Clone the repository including:
 
 ```bash
-git clone https://github.com/Diversiam90815/Plugin-Distortion.git
+git clone https://github.com/Diversiam90815/MultiEffekt-Plugin.git
 ```
 
 ### Build Instructions
@@ -38,7 +44,7 @@ git clone https://github.com/Diversiam90815/Plugin-Distortion.git
 Before building the project, you need to generate the necessary build files using CMake. This can be done using the `build.py` script with the `--prepare` or `-p` option.
 
 ```bash
-cd Plugin-Distortion
+cd MultiEffekt-Plugin
 python build.py --prepare
 ```
 
