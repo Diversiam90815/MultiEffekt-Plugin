@@ -10,6 +10,8 @@
 - **Delay** (in development)
 - **Reverb** (in development)
 - **Gain** (in development)
+- **Equalizer** (in development)
+- **Compressor** (in development)
 
 ## Features
 
