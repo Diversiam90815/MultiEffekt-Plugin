@@ -29,7 +29,12 @@ void Delay::prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS)
 
 	mCircularBufferLength = mDelayBuffer.getBuffer().getNumSamples();
 
-	mWritePosition		  = 0;
+	mWritePositions.resize(mNumChannels);
+
+	for (int channel = 0; channel < mNumChannels; ++channel)
+	{
+		mWritePositions[channel] = 0;
+	}
 }
 
 
@@ -56,6 +61,8 @@ void Delay::process(juce::AudioBuffer<float> &buffer)
 		float *channelData	   = buffer.getWritePointer(channel);
 		float *delayBufferData = delayBufferWritePtr[channel];
 
+		int	  &writePosition   = mWritePositions[channel];
+
 		for (int i = 0; i < numSamples; ++i)
 		{
 			// Current Sample from input
@@ -63,12 +70,12 @@ void Delay::process(juce::AudioBuffer<float> &buffer)
 			const float	 inputSample		= channelData[i];
 
 			// Write current input sample to the delay buffer (considering feedback)
-			float		 delayedSample		= delayBufferData[mWritePosition];
+			float		 delayedSample		= delayBufferData[writePosition];
 			float		 newDelayValues		= inputSample + (delayedSample * mFeedback.getCurrentValue());
-			delayBufferData[mWritePosition] = newDelayValues;
+			delayBufferData[writePosition]	= newDelayValues;
 
 			// Compute read position
-			int readPosition				= mWritePosition - mDelayInSamples;
+			int readPosition				= writePosition - mDelayInSamples;
 			if (readPosition < 0)
 			{
 				readPosition += mCircularBufferLength; // Wrap around
@@ -81,10 +88,10 @@ void Delay::process(juce::AudioBuffer<float> &buffer)
 			channelData[i] = (1.0f - mMix.getCurrentValue()) * (*in) + (mMix.getCurrentValue() * out);
 
 			// Set write position
-			++mWritePosition;
-			if (mWritePosition >= mCircularBufferLength)
+			++writePosition;
+			if (writePosition >= mCircularBufferLength)
 			{
-				mWritePosition = 0;
+				writePosition = 0;
 			}
 		}
 	}

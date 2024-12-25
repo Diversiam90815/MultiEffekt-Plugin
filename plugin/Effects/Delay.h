@@ -32,15 +32,13 @@ private:
 	juce::SmoothedValue<float> mMix					 = 0.5f; // dummy parameters for now
 
 	int						   mDelayInSamples		 = 0;	 // how many samples the read pointer will be offset (delayTime in Seconds * sampleRate)
-
-
-
-	int						   mWritePosition		 = 0;
 	int						   mCircularBufferLength = 0;
 
-	double					   mSampleRate			 = 48000;
-	int						   mNumChannels			 = 0;
-	int						   mMaxBlockSize		 = 0;
+	std::vector<int>		   mWritePositions;
+
+	double					   mSampleRate	 = 48000;
+	int						   mNumChannels	 = 0;
+	int						   mMaxBlockSize = 0;
 
 	CircularBuffer			   mDelayBuffer;
 };
