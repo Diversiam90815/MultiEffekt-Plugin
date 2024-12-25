@@ -30,6 +30,7 @@ juce_add_plugin(${PROJECT_NAME}
                 PRODUCT_NAME "${PROJECT_NAME}"
 )
 
+
 configure_file(${CMAKE_SOURCE_DIR}/Project.h.in ${CMAKE_BINARY_DIR}/include/Project.h @ONLY)
 
 
@@ -122,6 +123,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
         JUCE_ASIO=0
         JUCE_USE_ANDROID_OBOE=1
         JUCE_USE_OBOE_STABILIZED_CALLBACK=1
+        JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1
         _CRT_SECURE_NO_WARNINGS
 )
 

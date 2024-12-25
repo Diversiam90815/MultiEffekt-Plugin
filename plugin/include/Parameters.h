@@ -1,15 +1,16 @@
 #pragma once
 
+#include <juce_core/juce_core.h>
 
 //==============================================================================
 //						PARAMETERS
 //==============================================================================
 
-//constexpr auto			inputGainName	   = "Input";
-//constexpr auto			paramInput		   = "input";
-//constexpr float			inputMinValue	   = -24.0f;
-//constexpr float			inputMaxValue	   = 6.0f;
-//constexpr float			inputDefaultValue  = 0.0f;
+// constexpr auto			inputGainName	   = "Input";
+// constexpr auto			paramInput		   = "input";
+// constexpr float			inputMinValue	   = -24.0f;
+// constexpr float			inputMaxValue	   = 6.0f;
+// constexpr float			inputDefaultValue  = 0.0f;
 
 constexpr auto			outputName		   = "Output";
 constexpr auto			paramOutput		   = "output";
