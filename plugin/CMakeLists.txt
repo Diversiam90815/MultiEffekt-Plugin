@@ -19,6 +19,14 @@ set(UI_DIR          ${SOURCE_FILES_DIR}/UI)
 set(BUFFER_DIR      ${SOURCE_FILES_DIR}/Buffer)
 set(MISC_DIR        ${SOURCE_FILES_DIR}/Misc)
 
+set(ALL_PROJECT_DIRS
+        ${PROCESSOR_DIR}
+        ${EFFECTS_DIR}
+        ${UI_DIR}
+        ${BUFFER_DIR}
+        ${MISC_DIR}
+)
+
 
 #-----------------------------------------------------------------------------------------
 #   Juce Plugin Target
@@ -101,7 +109,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${PROJECT_BINARY_DIR}
         ${CMAKE_BINARY_DIR}/include
-        ${ALL_FILES}
+        ${ALL_PROJECT_DIRS}
 )
 
 
