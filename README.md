@@ -107,13 +107,11 @@ After a successful build, the application can be found in the build output direc
 
 - `plugin/` - Containing the JUCE audio plugin project.
   - `CMakeLists.txt` - CMake project for the JUCE audio plugin.
-  - `source/` - Contains the source code:
-    - `PluginProcessor.cpp` - The main processing code for the plugin.
-    - `PluginEditor.cpp` - The GUI editor for the plugin.
-  - `include/` - Contains the include (header) files:
-    - `PluginProcessor.h` - The main processing code for the plugin.
-    - `PluginEditor.h` - The GUI editor for the plugin.
-    - `Parameters.h` - Definitions for plugin parameters.
+  - `UI/` - Code for the UI
+  - `Buffer/` - Buffer handling modules
+  - `Effects/` - Effect modules utilized by this plugin
+  - `Misc/` - Helper and parameter ressources
+  - `Processor/` - Main plugin processor
 
 - `test/` - Containing the GoogleTest project.
   - `CMakeLists.txt` - CMake project for the GoogleTest.
