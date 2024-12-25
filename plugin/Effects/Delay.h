@@ -22,13 +22,16 @@ class Delay
 public:
 	Delay();
 
-	void prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS);
+	void	  prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS);
 
-	void process(juce::AudioBuffer<SampleType> &buffer);
+	void	  process(juce::AudioBuffer<SampleType> &buffer);
 
-	void setMix(float newValue);
-	void setDelayTime(float timeInMS);
-	void setFeedback(float newValue);
+	void	  setMix(float newValue);
+	void	  setDelayTime(float timeInMS);
+	void	  setFeedback(float newValue);
+
+	DelayType getDelayType() const;
+	void	  setDelayType(DelayType type);
 
 private:
 	juce::SmoothedValue<float> mDelayTimeMS;

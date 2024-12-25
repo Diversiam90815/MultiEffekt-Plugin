@@ -58,6 +58,10 @@ constexpr float			delayFeedbackMinValue	  = 0.0f;
 constexpr float			delayFeedbackMaxValue	  = 1.0f;
 constexpr float			delayFeedbackDefaultValue = 0.0f;
 
+constexpr auto			delayModelName			  = "Type";
+constexpr auto			paramDelayModel			  = "delaytype";
+const juce::StringArray delayModelArray			  = {"Single Tap", "Ping Pong"};
+
 
 //==============================================================================
 //						ENUM

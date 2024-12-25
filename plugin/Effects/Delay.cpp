@@ -13,6 +13,7 @@
 template <typename SampleType>
 Delay<SampleType>::Delay()
 {
+	mDelayType = DelayType::SingleTap;
 }
 
 
@@ -20,9 +21,9 @@ template <typename SampleType>
 void Delay<SampleType>::prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS)
 {
 	// Store the parameters locally
-	mSampleRate					= spec.sampleRate;
-	mNumChannels				= spec.numChannels;
-	mMaxBlockSize				= spec.maximumBlockSize;
+	mSampleRate	  = spec.sampleRate;
+	mNumChannels  = spec.numChannels;
+	mMaxBlockSize = spec.maximumBlockSize;
 
 	// prepare the buffer
 	mDelayBuffer.prepare(mSampleRate, mMaxBlockSize, mNumChannels, ((int)maxDelayInMS * 0.001));
@@ -41,10 +42,10 @@ void Delay<SampleType>::prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS
 template <typename SampleType>
 void Delay<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 {
-	const int numSamples							  = buffer.getNumSamples();
-	const int numChannels							  = buffer.getNumChannels();
+	const int numSamples							   = buffer.getNumSamples();
+	const int numChannels							   = buffer.getNumChannels();
 
-	mDelayInSamples									  = (int)(mDelayTimeMS.getCurrentValue() * (mSampleRate  / 1000.0));
+	mDelayInSamples									   = (int)(mDelayTimeMS.getCurrentValue() * (mSampleRate / 1000.0));
 
 	// For each channel we will
 	// 1. Write the incoming samples into the delay buffer
@@ -53,8 +54,8 @@ void Delay<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 	// 4. Mix into output
 
 	// Get reference to buffer
-	juce::AudioBuffer<SampleType> &delayBufferRef	  = mDelayBuffer.getBuffer();
-	auto						  delayBufferWritePtr = delayBufferRef.getArrayOfWritePointers();
+	juce::AudioBuffer<SampleType> &delayBufferRef	   = mDelayBuffer.getBuffer();
+	auto						   delayBufferWritePtr = delayBufferRef.getArrayOfWritePointers();
 
 	for (int channel = 0; channel < numChannels; ++channel)
 	{
@@ -118,6 +119,23 @@ template <typename SampleType>
 void Delay<SampleType>::setFeedback(float newValue)
 {
 	mFeedback.setTargetValue(newValue);
+}
+
+
+template <typename SampleType>
+DelayType Delay<SampleType>::getDelayType() const
+{
+	return mDelayType;
+}
+
+
+template <typename SampleType>
+void Delay<SampleType>::setDelayType(DelayType type)
+{
+	if (mDelayType != type)
+	{
+		mDelayType = type;
+	}
 }
 
 

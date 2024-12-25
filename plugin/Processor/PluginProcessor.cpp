@@ -32,6 +32,7 @@ PluginProcessor::PluginProcessor()
 	mValueTreeState.addParameterListener(paramBlendDelay, this);
 	mValueTreeState.addParameterListener(paramDelayTime, this);
 	mValueTreeState.addParameterListener(paramDelayFeedback, this);
+	mValueTreeState.addParameterListener(paramDelayModel, this);
 }
 
 
@@ -45,6 +46,7 @@ PluginProcessor::~PluginProcessor()
 	mValueTreeState.removeParameterListener(paramBlendDelay, this);
 	mValueTreeState.removeParameterListener(paramDelayTime, this);
 	mValueTreeState.removeParameterListener(paramDelayFeedback, this);
+	mValueTreeState.removeParameterListener(paramDelayModel, this);
 }
 
 
@@ -237,6 +239,22 @@ void PluginProcessor::updateParameters()
 	}
 	default: break;
 	}
+
+	auto delayMode = static_cast<int>(mValueTreeState.getRawParameterValue(paramDelayModel)->load());
+	switch (delayMode)
+	{
+	case 0:
+	{
+		mDelayModule.setDelayType(DelayType::SingleTap);
+		break;
+	}
+	case 1:
+	{
+		mDelayModule.setDelayType(DelayType::PingPong);
+		break;
+	}
+	default: break;
+	}
 }
 
 
@@ -249,11 +267,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParam
 	auto output			 = std::make_unique<juce::AudioParameterFloat>(paramOutput, outputName, outputMinValue, outputMaxValue, outputDefaultValue);
 
 	// Distortion
+	auto distModel		 = std::make_unique<juce::AudioParameterChoice>(paramDistModel, distModelName, distModelsArray, 0);
 	auto drive			 = std::make_unique<juce::AudioParameterFloat>(paramDrive, driveName, driveMinValue, driveMaxValue, driveDefaultValue);
 	auto blendDistortion = std::make_unique<juce::AudioParameterFloat>(paramBlendDist, blendNameDistortion, blendMinValue, blendMaxValue, blendDefaultValue);
-	auto distModel		 = std::make_unique<juce::AudioParameterChoice>(paramDistModel, distModelName, distModelsArray, 0);
 
 	// Delay
+	auto delayModel		 = std::make_unique<juce::AudioParameterChoice>(paramDelayModel, delayModelName, delayModelArray, 0);
 	auto blendDelay		 = std::make_unique<juce::AudioParameterFloat>(paramBlendDelay, blendNameDelay, blendMinValue, blendMaxValue, blendDefaultValue);
 	auto delayTime		 = std::make_unique<juce::AudioParameterFloat>(paramDelayTime, delayTimeName, delayTimeMinValue, delayTimeMaxValue, delayTimeDefaultValue);
 	auto delayFeedback =
@@ -267,6 +286,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParam
 	params.push_back(std::move(blendDelay));
 	params.push_back(std::move(delayTime));
 	params.push_back(std::move(delayFeedback));
+	params.push_back(std::move(delayModel));
 
 	return {params.begin(), params.end()};
 }
