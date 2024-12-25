@@ -14,7 +14,11 @@ add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
     PRIVATE
         ${GOOGLETEST_SOURCE_DIR}/googletest/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/../plugin/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../plugin/Effects/
+        ${CMAKE_CURRENT_SOURCE_DIR}/../plugin/Buffer/
+        ${CMAKE_CURRENT_SOURCE_DIR}/../plugin/Processor/
+        ${CMAKE_CURRENT_SOURCE_DIR}/../plugin/UI/
+        ${CMAKE_CURRENT_SOURCE_DIR}/../plugin/Misc/
         ${JUCE_SOURCE_DIR}/modules
 )
 
@@ -27,6 +31,11 @@ target_link_libraries(${PROJECT_NAME}
 
 
 include(GoogleTest)
+
+
+target_compile_definitions(${PROJECT_NAME} PUBLIC
+        JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1
+)
 
 
 ## Discover GTests
