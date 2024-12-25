@@ -4,15 +4,28 @@
 
 cmake_minimum_required(VERSION 3.25)
 
-project(Distortion VERSION 0.1.0)
+project(MultiEffectPlugin VERSION 0.1.0)
 
 
 #-----------------------------------------------------------------------------------------
 #   Directories
 #-----------------------------------------------------------------------------------------
 
-set (SOURCE_FILES_DIR ${PROJECT_SOURCE_DIR}/Source)
-set (HEADER_FILES_DIR ${PROJECT_SOURCE_DIR}/include)
+set (SOURCE_FILES_DIR ${PROJECT_SOURCE_DIR})
+
+set(PROCESSOR_DIR   ${SOURCE_FILES_DIR}/Processor)
+set(EFFECTS_DIR     ${SOURCE_FILES_DIR}/Effects)
+set(UI_DIR          ${SOURCE_FILES_DIR}/UI)
+set(BUFFER_DIR      ${SOURCE_FILES_DIR}/Buffer)
+set(MISC_DIR        ${SOURCE_FILES_DIR}/Misc)
+
+set(ALL_PROJECT_DIRS
+        ${PROCESSOR_DIR}
+        ${EFFECTS_DIR}
+        ${UI_DIR}
+        ${BUFFER_DIR}
+        ${MISC_DIR}
+)
 
 
 #-----------------------------------------------------------------------------------------
@@ -30,6 +43,7 @@ juce_add_plugin(${PROJECT_NAME}
                 PRODUCT_NAME "${PROJECT_NAME}"
 )
 
+
 configure_file(${CMAKE_SOURCE_DIR}/Project.h.in ${CMAKE_BINARY_DIR}/include/Project.h @ONLY)
 
 
@@ -37,19 +51,34 @@ configure_file(${CMAKE_SOURCE_DIR}/Project.h.in ${CMAKE_BINARY_DIR}/include/Proj
 #   Files
 #-----------------------------------------------------------------------------------------
 
-set(Header_Files
-        ${HEADER_FILES_DIR}/PluginProcessor.h
-        ${HEADER_FILES_DIR}/PluginEditor.h
-
-        ${HEADER_FILES_DIR}/Distortion.h
-
-        ${HEADER_FILES_DIR}/Parameters.h
+set(Processor_Files 
+        ${PROCESSOR_DIR}/PluginProcessor.h  ${PROCESSOR_DIR}/PluginProcessor.cpp
 )
 
-set(Source_Files
-         ${SOURCE_FILES_DIR}/PluginProcessor.cpp
-         ${SOURCE_FILES_DIR}/PluginEditor.cpp
-         ${SOURCE_FILES_DIR}/Distortion.cpp
+set(Effect_Files 
+        ${EFFECTS_DIR}/Distortion.h         ${EFFECTS_DIR}/Distortion.cpp
+        ${EFFECTS_DIR}/Delay.h              ${EFFECTS_DIR}/Delay.cpp
+)
+
+set(UI_Files 
+        ${UI_DIR}/PluginEditor.h            ${UI_DIR}/PluginEditor.cpp
+)
+
+set(Buffer_Files 
+        ${BUFFER_DIR}/CircularBuffer.h      ${BUFFER_DIR}/CircularBuffer.cpp 
+)
+
+set(Misc_Files 
+        ${MISC_DIR}/Parameters.h
+)
+
+
+set(ALL_FILES
+    ${Processor_Files}
+    ${Effect_Files}
+    ${UI_Files}
+    ${Buffer_Files}
+    ${Misc_Files}
 )
 
 
@@ -57,18 +86,16 @@ set(Source_Files
 #   Source Groups
 #-----------------------------------------------------------------------------------------
 
-source_group("Plugin Sources" FILES ${Source_Files})
-source_group("Plugin Headers" FILES ${Header_Files})
+source_group("MainProcessor"    FILES ${Processor_Files})
+source_group("Effects"          FILES ${Effect_Files})
+source_group("UI"               FILES ${UI_Files})
+source_group("Buffer"           FILES ${Buffer_Files})
+source_group("Misc"             FILES ${Misc_Files})
 
 
 #-----------------------------------------------------------------------------------------
 #   Target Sources
 #-----------------------------------------------------------------------------------------
-
-set(ALL_FILES
-    ${Header_Files}
-    ${Source_Files}
-)
 
 target_sources(${PROJECT_NAME} PRIVATE  
         ${ALL_FILES} 
@@ -81,9 +108,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${PROJECT_BINARY_DIR}
-        ${CMAKE_BINARY_DIR}/include
-        ${SOURCE_FILES_DIR}
-        ${HEADER_FILES_DIR}
+        ${CMAKE_BINARY_DIR}/include/
+        ${ALL_PROJECT_DIRS}
 )
 
 
@@ -120,6 +146,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
         JUCE_ASIO=0
         JUCE_USE_ANDROID_OBOE=1
         JUCE_USE_OBOE_STABILIZED_CALLBACK=1
+        JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1
         _CRT_SECURE_NO_WARNINGS
 )
 

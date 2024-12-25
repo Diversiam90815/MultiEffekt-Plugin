@@ -1,3 +1,12 @@
+/*
+  ==============================================================================
+
+	Module			Distortion
+	Description		Handler for multiple distortion effect types : Saturation, Hard & Soft Clipping
+
+  ==============================================================================
+*/
+
 #include "Distortion.h"
 
 template <typename SampleType>
@@ -36,21 +45,22 @@ void Distortion<SampleType>::reset()
 }
 
 
-
 template <typename SampleType>
-void Distortion<SampleType>::setDrive(SampleType newDrive)
+void Distortion<SampleType>::setDrive(float newDrive)
 {
 	mDrive.setTargetValue(newDrive);
 }
 
+
 template <typename SampleType>
-void Distortion<SampleType>::setMix(SampleType newMix)
+void Distortion<SampleType>::setMix(float newMix)
 {
 	mMix.setTargetValue(newMix);
 }
 
+
 template <typename SampleType>
-void Distortion<SampleType>::setOutput(SampleType newOutput)
+void Distortion<SampleType>::setOutput(float newOutput)
 {
 	mOutput.setTargetValue(newOutput);
 }

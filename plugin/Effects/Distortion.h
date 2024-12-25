@@ -1,3 +1,11 @@
+/*
+  ==============================================================================
+
+	Module			Distortion
+	Description		Handler for multiple distortion effect types : Saturation, Hard & Soft Clipping
+
+  ==============================================================================
+*/
 
 #pragma once
 
@@ -20,9 +28,9 @@ public:
 
 	SampleType	   processSample(SampleType input) noexcept;
 
-	void		   setDrive(SampleType newDrive);
-	void		   setMix(SampleType newMix);
-	void		   setOutput(SampleType newOutput);
+	void		   setDrive(float newDrive);
+	void		   setMix(float newMix);
+	void		   setOutput(float newOutput);
 
 	DistortionType getCurrentDistortionType() const;
 	void		   setCurrentDistortionType(const DistortionType newType);

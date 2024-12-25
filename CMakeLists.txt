@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(DistortionPlugin LANGUAGES CXX)
+project(MultiEffectPluginProject LANGUAGES CXX)
 
 set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR})
 
