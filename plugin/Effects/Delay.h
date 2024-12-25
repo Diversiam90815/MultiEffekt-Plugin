@@ -27,28 +27,29 @@ public:
 	void	  process(juce::AudioBuffer<SampleType> &buffer);
 
 	void	  setMix(float newValue);
-	void	  setDelayTime(float timeInMS);
 	void	  setFeedback(float newValue);
 
 	DelayType getDelayType() const;
 	void	  setDelayType(DelayType type);
 
+	void	  setChannelDelayTime(int channel, float timeInMS);
+
 private:
-	juce::SmoothedValue<float> mDelayTimeMS;
-	juce::SmoothedValue<float> mFeedback;
-	juce::SmoothedValue<float> mMix;
+	juce::SmoothedValue<float>				mFeedback;
+	juce::SmoothedValue<float>				mMix;
 
-	int						   mDelayInSamples		 = 0; // how many samples the read pointer will be offset (delayTime in Seconds * sampleRate)
-	int						   mCircularBufferLength = 0;
+	std::vector<juce::SmoothedValue<float>> mChannelDelayTimes;	// Using different delay times for each channel
 
-	std::vector<int>		   mWritePositions;
+	int										mCircularBufferLength = 0;
 
-	double					   mSampleRate	 = 48000;
-	int						   mNumChannels	 = 0;
-	int						   mMaxBlockSize = 0;
+	std::vector<int>						mWritePositions;
 
-	DelayType				   mDelayType;
+	double									mSampleRate	  = 48000;
+	int										mNumChannels  = 0;
+	int										mMaxBlockSize = 0;
+
+	DelayType								mDelayType;
 
 
-	CircularBuffer<SampleType> mDelayBuffer;
+	CircularBuffer<SampleType>				mDelayBuffer;
 };

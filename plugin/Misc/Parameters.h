@@ -46,8 +46,10 @@ constexpr auto			distModelName			  = "Type";
 constexpr auto			paramDistModel			  = "distortiontype";
 const juce::StringArray distModelsArray			  = {"Hard", "Soft", "Saturation"};
 
-constexpr auto			delayTimeName			  = "Delay Time in MS";
-constexpr auto			paramDelayTime			  = "delayTimeMS";
+constexpr auto			delayTimeNameLeft		  = "Delay Time in MS (Left)";
+constexpr auto			paramDelayTimeLeft		  = "delayTimeMSLeft";
+constexpr auto			delayTimeNameRight		  = "Delay Time in MS (Right)";
+constexpr auto			paramDelayTimeRight		  = "delayTimeMSRight";
 constexpr float			delayTimeMinValue		  = 0.0f;
 constexpr float			delayTimeMaxValue		  = 2000.f; // 2 Seconds of maximum delay time
 constexpr float			delayTimeDefaultValue	  = 0.0f;
@@ -73,6 +75,7 @@ enum DistortionType
 	softClipping,
 	saturation
 };
+
 
 enum DelayType
 {

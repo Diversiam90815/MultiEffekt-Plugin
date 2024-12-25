@@ -36,6 +36,12 @@ void Delay<SampleType>::prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS
 	{
 		mWritePositions[channel] = 0;
 	}
+
+	mChannelDelayTimes.resize(mNumChannels);
+	for (int channel = 0; channel < mNumChannels; ++channel)
+	{
+		mChannelDelayTimes[channel].reset(mSampleRate, 0.02);
+	}
 }
 
 
@@ -44,8 +50,6 @@ void Delay<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 {
 	const int numSamples							   = buffer.getNumSamples();
 	const int numChannels							   = buffer.getNumChannels();
-
-	mDelayInSamples									   = (int)(mDelayTimeMS.getCurrentValue() * (mSampleRate / 1000.0));
 
 	// For each channel we will
 	// 1. Write the incoming samples into the delay buffer
@@ -66,20 +70,24 @@ void Delay<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 
 		for (int i = 0; i < numSamples; ++i)
 		{
-			float			 feedbackValue	= mFeedback.getNextValue();
-			float			 mixValue		= mMix.getNextValue();
+			float			 feedbackValue			 = mFeedback.getNextValue();
+			float			 mixValue				 = mMix.getNextValue();
+
+			// Get the channel specific delay time
+			float			 thisChannelDelayTimeMS	 = mChannelDelayTimes[channel].getNextValue();
+			int				 thisChannelDelaySamples = (int)(thisChannelDelayTimeMS * (mSampleRate / 1000.0f));
 
 			// Current Sample from input
-			const SampleType inputSample	= channelData[i];
+			const SampleType inputSample			 = channelData[i];
 
 			// Write current input sample to the delay buffer (considering feedback)
-			SampleType		 delayedSample	= delayBufferData[writePosition];
-			SampleType		 newDelayValues = inputSample + (delayedSample * feedbackValue);
-			delayBufferData[writePosition]	= newDelayValues;
+			SampleType		 delayedSample			 = delayBufferData[writePosition];
+			SampleType		 newDelayValues			 = inputSample + (delayedSample * feedbackValue);
+			delayBufferData[writePosition]			 = newDelayValues;
 
 			// Compute read position
-			int readPosition				= (writePosition - mDelayInSamples) % mCircularBufferLength;
-			if (readPosition < 0)
+			int readPosition						 = (writePosition - thisChannelDelaySamples) % mCircularBufferLength;
+			while (readPosition < 0)
 			{
 				readPosition += mCircularBufferLength; // Wrap around
 			}
@@ -109,13 +117,6 @@ void Delay<SampleType>::setMix(float newValue)
 
 
 template <typename SampleType>
-void Delay<SampleType>::setDelayTime(float timeInMS)
-{
-	mDelayTimeMS.setTargetValue(timeInMS);
-}
-
-
-template <typename SampleType>
 void Delay<SampleType>::setFeedback(float newValue)
 {
 	mFeedback.setTargetValue(newValue);
@@ -136,6 +137,16 @@ void Delay<SampleType>::setDelayType(DelayType type)
 	{
 		mDelayType = type;
 	}
+}
+
+
+template <typename SampleType>
+void Delay<SampleType>::setChannelDelayTime(int channel, float timeInMS)
+{
+	if (channel < 0 || channel >= mNumChannels)
+		return;
+
+	mChannelDelayTimes[channel].setTargetValue(timeInMS);
 }
 
 

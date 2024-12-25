@@ -16,7 +16,7 @@ PluginProcessor::PluginProcessor()
 	: AudioProcessor(BusesProperties()
 #if !JucePlugin_IsMidiEffect
 #if !JucePlugin_IsSynth
-						 .withInput("Input", juce::AudioChannelSet::stereo(), true)
+						 .withInput("Input", juce::AudioChannelSet::mono(), true)
 #endif
 						 .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
@@ -30,7 +30,8 @@ PluginProcessor::PluginProcessor()
 	mValueTreeState.addParameterListener(paramBlendDist, this);
 	mValueTreeState.addParameterListener(paramDistModel, this);
 	mValueTreeState.addParameterListener(paramBlendDelay, this);
-	mValueTreeState.addParameterListener(paramDelayTime, this);
+	mValueTreeState.addParameterListener(paramDelayTimeLeft, this);
+	mValueTreeState.addParameterListener(paramDelayTimeRight, this);
 	mValueTreeState.addParameterListener(paramDelayFeedback, this);
 	mValueTreeState.addParameterListener(paramDelayModel, this);
 }
@@ -44,7 +45,8 @@ PluginProcessor::~PluginProcessor()
 	mValueTreeState.removeParameterListener(paramBlendDist, this);
 	mValueTreeState.removeParameterListener(paramDistModel, this);
 	mValueTreeState.removeParameterListener(paramBlendDelay, this);
-	mValueTreeState.removeParameterListener(paramDelayTime, this);
+	mValueTreeState.removeParameterListener(paramDelayTimeLeft, this);
+	mValueTreeState.removeParameterListener(paramDelayTimeRight, this);
 	mValueTreeState.removeParameterListener(paramDelayFeedback, this);
 	mValueTreeState.removeParameterListener(paramDelayModel, this);
 }
@@ -216,7 +218,8 @@ void PluginProcessor::updateParameters()
 	mDistortionModule.setMix(mValueTreeState.getRawParameterValue(paramBlendDist)->load());
 
 	mDelayModule.setMix(mValueTreeState.getRawParameterValue(paramBlendDelay)->load());
-	mDelayModule.setDelayTime(mValueTreeState.getRawParameterValue(paramDelayTime)->load());
+	mDelayModule.setChannelDelayTime(0, mValueTreeState.getRawParameterValue(paramDelayTimeLeft)->load());
+	mDelayModule.setChannelDelayTime(1, mValueTreeState.getRawParameterValue(paramDelayTimeRight)->load());
 	mDelayModule.setFeedback(mValueTreeState.getRawParameterValue(paramDelayFeedback)->load());
 
 	auto model = static_cast<int>(mValueTreeState.getRawParameterValue(paramDistModel)->load());
@@ -274,7 +277,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParam
 	// Delay
 	auto delayModel		 = std::make_unique<juce::AudioParameterChoice>(paramDelayModel, delayModelName, delayModelArray, 0);
 	auto blendDelay		 = std::make_unique<juce::AudioParameterFloat>(paramBlendDelay, blendNameDelay, blendMinValue, blendMaxValue, blendDefaultValue);
-	auto delayTime		 = std::make_unique<juce::AudioParameterFloat>(paramDelayTime, delayTimeName, delayTimeMinValue, delayTimeMaxValue, delayTimeDefaultValue);
+	auto delayTimeLeft		 = std::make_unique<juce::AudioParameterFloat>(paramDelayTimeLeft, delayTimeNameLeft, delayTimeMinValue, delayTimeMaxValue, delayTimeDefaultValue);
+	auto delayTimeRight		 = std::make_unique<juce::AudioParameterFloat>(paramDelayTimeRight, delayTimeNameRight, delayTimeMinValue, delayTimeMaxValue, delayTimeDefaultValue);
 	auto delayFeedback =
 		std::make_unique<juce::AudioParameterFloat>(paramDelayFeedback, delayFeedbackName, delayFeedbackMinValue, delayFeedbackMaxValue, delayFeedbackDefaultValue);
 
@@ -284,7 +288,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParam
 	params.push_back(std::move(blendDistortion));
 	params.push_back(std::move(distModel));
 	params.push_back(std::move(blendDelay));
-	params.push_back(std::move(delayTime));
+	params.push_back(std::move(delayTimeLeft));
+	params.push_back(std::move(delayTimeRight));
 	params.push_back(std::move(delayFeedback));
 	params.push_back(std::move(delayModel));
 
