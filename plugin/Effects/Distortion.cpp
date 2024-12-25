@@ -45,18 +45,19 @@ void Distortion<SampleType>::reset()
 }
 
 
-
 template <typename SampleType>
 void Distortion<SampleType>::setDrive(float newDrive)
 {
 	mDrive.setTargetValue(newDrive);
 }
 
+
 template <typename SampleType>
 void Distortion<SampleType>::setMix(float newMix)
 {
 	mMix.setTargetValue(newMix);
 }
+
 
 template <typename SampleType>
 void Distortion<SampleType>::setOutput(float newOutput)

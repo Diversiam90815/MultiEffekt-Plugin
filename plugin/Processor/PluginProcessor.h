@@ -14,6 +14,7 @@
 #include "Project.h"
 #include "Parameters.h"
 #include "Distortion.h"
+#include "Delay.h"
 
 
 class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
@@ -87,12 +88,10 @@ private:
 	//						PRIVATE OBJECTS
 	//==============================================================================
 
-	//float							   drive;
-	//float							   input;
-	//float							   output;
-	//float							   blend;
-
 	Distortion<float>				   mDistortionModule;
+
+	Delay<float>					   mDelayModule;
+
 
 	juce::AudioProcessorValueTreeState mValueTreeState;
 

@@ -13,6 +13,8 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 
 #include "CircularBuffer.h"
+#include "Parameters.h"
+
 
 template <typename SampleType>
 class Delay
@@ -22,9 +24,11 @@ public:
 
 	void prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS);
 
-
 	void process(juce::AudioBuffer<SampleType> &buffer);
 
+	void setMix(float newValue);
+	void setDelayTime(float timeInMS);
+	void setFeedback(float newValue);
 
 private:
 	juce::SmoothedValue<float> mDelayTimeMS			 = 500;	 // dummy parameters for now
@@ -39,6 +43,9 @@ private:
 	double					   mSampleRate	 = 48000;
 	int						   mNumChannels	 = 0;
 	int						   mMaxBlockSize = 0;
+
+	DelayType				   mDelayType;
+
 
 	CircularBuffer<SampleType> mDelayBuffer;
 };

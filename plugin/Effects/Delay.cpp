@@ -25,9 +25,7 @@ void Delay<SampleType>::prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS
 	mMaxBlockSize				= spec.maximumBlockSize;
 
 	// prepare the buffer
-	const int maxDelayInSamples = (int)std::ceil(maxDelayInMS * 1000 * mSampleRate);
-
-	mDelayBuffer.prepare(mSampleRate, mMaxBlockSize, mNumChannels, ((int)maxDelayInMS * 1000));
+	mDelayBuffer.prepare(mSampleRate, mMaxBlockSize, mNumChannels, ((int)maxDelayInMS * 0.001));
 
 	mCircularBufferLength = mDelayBuffer.getBuffer().getNumSamples();
 
@@ -100,6 +98,28 @@ void Delay<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 		}
 	}
 }
+
+
+template <typename SampleType>
+void Delay<SampleType>::setMix(float newValue)
+{
+	mMix.setTargetValue(newValue);
+}
+
+
+template <typename SampleType>
+void Delay<SampleType>::setDelayTime(float timeInMS)
+{
+	mDelayTimeMS.setTargetValue(timeInMS);
+}
+
+
+template <typename SampleType>
+void Delay<SampleType>::setFeedback(float newValue)
+{
+	mFeedback.setTargetValue(newValue);
+}
+
 
 
 // Declare Distortion Template Classes that may be used

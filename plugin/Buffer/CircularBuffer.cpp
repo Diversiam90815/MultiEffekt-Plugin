@@ -38,11 +38,11 @@ void CircularBuffer<SampleType>::copyFromBufferToCircularBuffer(juce::AudioBuffe
 {
 	for (int channel = 0; channel < mNumChannels; ++channel)
 	{
-		const int	 bufferLength		  = buffer.getNumSamples();
-		const int	 circularBufferLength = mCircularBuffer.getNumSamples();
+		const int		  bufferLength		   = buffer.getNumSamples();
+		const int		  circularBufferLength = mCircularBuffer.getNumSamples();
 
-		const SampleType *bufferData			  = buffer.getReadPointer(channel);
-		const SampleType *circularBufferData	  = mCircularBuffer.getReadPointer(channel);
+		const SampleType *bufferData		   = buffer.getReadPointer(channel);
+		const SampleType *circularBufferData   = mCircularBuffer.getReadPointer(channel);
 
 		// Copy Data
 		if (circularBufferLength > bufferLength + mWritePosition)
