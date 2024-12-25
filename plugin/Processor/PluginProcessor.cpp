@@ -166,12 +166,15 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiB
 	auto					totalNumInputChannels  = getTotalNumInputChannels();
 	auto					totalNumOutputChannels = getTotalNumOutputChannels();
 
+	// Apply input gain
+	buffer.applyGain(juce::Decibels::decibelsToGain(mInput));
+
 	for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
 		buffer.clear(i, 0, buffer.getNumSamples());
 
 	// Processing the distortion
-	//juce::dsp::AudioBlock<float> block{buffer};
-	//mDistortionModule.process(juce::dsp::ProcessContextReplacing<float>(block));
+	juce::dsp::AudioBlock<float> block{buffer};
+	mDistortionModule.process(juce::dsp::ProcessContextReplacing<float>(block));
 
 	mDelayModule.process(buffer);
 }
@@ -204,6 +207,8 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes)
 
 void PluginProcessor::updateParameters()
 {
+	mInput = mValueTreeState.getRawParameterValue(paramInput)->load();
+
 	mDistortionModule.setDrive(mValueTreeState.getRawParameterValue(paramDrive)->load());
 	mDistortionModule.setOutput(mValueTreeState.getRawParameterValue(paramOutput)->load());
 	mDistortionModule.setMix(mValueTreeState.getRawParameterValue(paramBlendDist)->load());

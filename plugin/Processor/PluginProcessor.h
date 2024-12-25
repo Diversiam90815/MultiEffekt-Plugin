@@ -92,6 +92,7 @@ private:
 
 	Delay<float>					   mDelayModule;
 
+	float mInput;
 
 	juce::AudioProcessorValueTreeState mValueTreeState;
 
