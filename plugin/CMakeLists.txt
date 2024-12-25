@@ -101,8 +101,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${PROJECT_BINARY_DIR}
         ${CMAKE_BINARY_DIR}/include
-        ${SOURCE_FILES_DIR}
-        ${HEADER_FILES_DIR}
+        ${ALL_FILES}
 )
 
 
