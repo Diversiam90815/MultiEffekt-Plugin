@@ -1,3 +1,11 @@
+/*
+  ==============================================================================
+
+	Module			MainPluginProcessor
+	Description		Main processor of the plugin
+
+  ==============================================================================
+*/
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"

@@ -1,5 +1,14 @@
+/*
+  ==============================================================================
+
+	Module			CircularBuffer
+	Description		Buffer handler for time based effects
+
+  ==============================================================================
+*/
 
 #pragma once
+
 #include "Parameters.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 

@@ -1,6 +1,15 @@
+/*
+  ==============================================================================
+
+	Module			PluginEditor
+	Description		Main module for the UI
+
+  ==============================================================================
+*/
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+
 
 //==============================================================================
 PluginEditor::PluginEditor(PluginProcessor &p) : juce::AudioProcessorEditor(&p), audioProcessor(p)

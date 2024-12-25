@@ -1,3 +1,11 @@
+/*
+  ==============================================================================
+
+	Module			CircularBuffer
+	Description		Buffer handler for time based effects
+
+  ==============================================================================
+*/
 
 #include "CircularBuffer.h"
 

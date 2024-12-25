@@ -1,3 +1,12 @@
+/*
+  ==============================================================================
+
+	Module			Distortion
+	Description		Handler for multiple distortion effect types : Saturation, Hard & Soft Clipping
+
+  ==============================================================================
+*/
+
 #include "Distortion.h"
 
 template <typename SampleType>

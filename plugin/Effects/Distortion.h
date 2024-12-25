@@ -1,3 +1,11 @@
+/*
+  ==============================================================================
+
+	Module			Distortion
+	Description		Handler for multiple distortion effect types : Saturation, Hard & Soft Clipping
+
+  ==============================================================================
+*/
 
 #pragma once
 

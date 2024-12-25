@@ -1,3 +1,11 @@
+/*
+  ==============================================================================
+
+	Module			MainPluginProcessor
+	Description		Main processor of the plugin
+
+  ==============================================================================
+*/
 
 #pragma once
 
@@ -5,7 +13,6 @@
 
 #include "Project.h"
 #include "Parameters.h"
-
 #include "Distortion.h"
 
 
