@@ -53,6 +53,7 @@ void CircularBuffer::copyFromBufferToCircularBuffer(juce::AudioBuffer<float> &bu
 	}
 }
 
+
 juce::AudioBuffer<float> CircularBuffer::getBuffer()
 {
 	return mCircularBuffer;
