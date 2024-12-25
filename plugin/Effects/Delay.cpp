@@ -10,12 +10,14 @@
 #include "Delay.h"
 
 
-Delay::Delay()
+template <typename SampleType>
+Delay<SampleType>::Delay()
 {
 }
 
 
-void Delay::prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS)
+template <typename SampleType>
+void Delay<SampleType>::prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS)
 {
 	// Store the parameters locally
 	mSampleRate					= spec.sampleRate;
@@ -38,12 +40,13 @@ void Delay::prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS)
 }
 
 
-void Delay::process(juce::AudioBuffer<float> &buffer)
+template <typename SampleType>
+void Delay<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 {
-	const int numSamples						 = buffer.getNumSamples();
-	const int numChannels						 = buffer.getNumChannels();
+	const int numSamples							  = buffer.getNumSamples();
+	const int numChannels							  = buffer.getNumChannels();
 
-	mDelayInSamples								 = (int)(mDelayTimeMS.getCurrentValue() * 1000 * mSampleRate);
+	mDelayInSamples									  = (int)(mDelayTimeMS.getCurrentValue() * 1000 * mSampleRate);
 
 	// For each channel we will
 	// 1. Write the incoming samples into the delay buffer
@@ -51,41 +54,42 @@ void Delay::process(juce::AudioBuffer<float> &buffer)
 	// 3. Apply feedback
 	// 4. Mix into output
 
-
 	// Get reference to buffer
-	juce::AudioBuffer<float> delayBufferRef		 = mDelayBuffer.getBuffer();
-	auto					 delayBufferWritePtr = delayBufferRef.getArrayOfWritePointers();
+	juce::AudioBuffer<SampleType> delayBufferRef	  = mDelayBuffer.getBuffer();
+	auto						  delayBufferWritePtr = delayBufferRef.getArrayOfWritePointers();
 
 	for (int channel = 0; channel < numChannels; ++channel)
 	{
-		float *channelData	   = buffer.getWritePointer(channel);
-		float *delayBufferData = delayBufferWritePtr[channel];
+		SampleType *channelData		= buffer.getWritePointer(channel);
+		SampleType *delayBufferData = delayBufferWritePtr[channel];
 
-		int	  &writePosition   = mWritePositions[channel];
+		int		   &writePosition	= mWritePositions[channel];
 
 		for (int i = 0; i < numSamples; ++i)
 		{
+			float			 feedbackValue	= mFeedback.getNextValue();
+			float			 mixValue		= mMix.getNextValue();
+
 			// Current Sample from input
-			const float *in					= &channelData[i];
-			const float	 inputSample		= channelData[i];
+			const SampleType inputSample	= channelData[i];
 
 			// Write current input sample to the delay buffer (considering feedback)
-			float		 delayedSample		= delayBufferData[writePosition];
-			float		 newDelayValues		= inputSample + (delayedSample * mFeedback.getCurrentValue());
+			SampleType		 delayedSample	= delayBufferData[writePosition];
+			SampleType		 newDelayValues = inputSample + (delayedSample * feedbackValue);
 			delayBufferData[writePosition]	= newDelayValues;
 
 			// Compute read position
-			int readPosition				= writePosition - mDelayInSamples;
+			int readPosition				= (writePosition - mDelayInSamples) % mCircularBufferLength;
 			if (readPosition < 0)
 			{
 				readPosition += mCircularBufferLength; // Wrap around
 			}
 
 			// Get delayed output
-			float out	   = delayBufferData[readPosition];
+			SampleType out = delayBufferData[readPosition];
 
 			// Mix delayed output
-			channelData[i] = (1.0f - mMix.getCurrentValue()) * (*in) + (mMix.getCurrentValue() * out);
+			channelData[i] = (SampleType(1.0f) - mixValue) * inputSample + (mixValue * out);
 
 			// Set write position
 			++writePosition;
@@ -96,3 +100,8 @@ void Delay::process(juce::AudioBuffer<float> &buffer)
 		}
 	}
 }
+
+
+// Declare Distortion Template Classes that may be used
+template class Delay<float>;
+template class Delay<double>;

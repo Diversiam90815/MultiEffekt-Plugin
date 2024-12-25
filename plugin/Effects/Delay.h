@@ -14,7 +14,7 @@
 
 #include "CircularBuffer.h"
 
-
+template <typename SampleType>
 class Delay
 {
 public:
@@ -23,7 +23,7 @@ public:
 	void prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS);
 
 
-	void process(juce::AudioBuffer<float> &buffer);
+	void process(juce::AudioBuffer<SampleType> &buffer);
 
 
 private:
@@ -40,5 +40,5 @@ private:
 	int						   mNumChannels	 = 0;
 	int						   mMaxBlockSize = 0;
 
-	CircularBuffer			   mDelayBuffer;
+	CircularBuffer<SampleType> mDelayBuffer;
 };

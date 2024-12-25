@@ -10,17 +10,20 @@
 #include "CircularBuffer.h"
 
 
-CircularBuffer::CircularBuffer()
+template <typename SampleType>
+CircularBuffer<SampleType>::CircularBuffer()
 {
 }
 
 
-CircularBuffer::~CircularBuffer()
+template <typename SampleType>
+CircularBuffer<SampleType>::~CircularBuffer()
 {
 }
 
 
-void CircularBuffer::prepare(double sampleRate, int numSamples, int numChannels, int bufferLengthInSeconds)
+template <typename SampleType>
+void CircularBuffer<SampleType>::prepare(double sampleRate, int numSamples, int numChannels, int bufferLengthInSeconds)
 {
 	mNumChannels				 = numChannels;
 	mSizeOfBufferInSeconds		 = bufferLengthInSeconds;
@@ -30,15 +33,16 @@ void CircularBuffer::prepare(double sampleRate, int numSamples, int numChannels,
 }
 
 
-void CircularBuffer::copyFromBufferToCircularBuffer(juce::AudioBuffer<float> &buffer)
+template <typename SampleType>
+void CircularBuffer<SampleType>::copyFromBufferToCircularBuffer(juce::AudioBuffer<SampleType> &buffer)
 {
 	for (int channel = 0; channel < mNumChannels; ++channel)
 	{
 		const int	 bufferLength		  = buffer.getNumSamples();
 		const int	 circularBufferLength = mCircularBuffer.getNumSamples();
 
-		const float *bufferData			  = buffer.getReadPointer(channel);
-		const float *circularBufferData	  = mCircularBuffer.getReadPointer(channel);
+		const SampleType *bufferData			  = buffer.getReadPointer(channel);
+		const SampleType *circularBufferData	  = mCircularBuffer.getReadPointer(channel);
 
 		// Copy Data
 		if (circularBufferLength > bufferLength + mWritePosition)
@@ -62,7 +66,14 @@ void CircularBuffer::copyFromBufferToCircularBuffer(juce::AudioBuffer<float> &bu
 }
 
 
-juce::AudioBuffer<float> CircularBuffer::getBuffer()
+template <typename SampleType>
+juce::AudioBuffer<SampleType> &CircularBuffer<SampleType>::getBuffer()
 {
 	return mCircularBuffer;
 }
+
+
+
+// Declare Distortion Template Classes that may be used
+template class CircularBuffer<float>;
+template class CircularBuffer<double>;
