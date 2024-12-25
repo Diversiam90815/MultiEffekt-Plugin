@@ -44,7 +44,7 @@ void Delay<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 	const int numSamples							  = buffer.getNumSamples();
 	const int numChannels							  = buffer.getNumChannels();
 
-	mDelayInSamples									  = (int)(mDelayTimeMS.getCurrentValue() * 1000 * mSampleRate);
+	mDelayInSamples									  = (int)(mDelayTimeMS.getCurrentValue() * (mSampleRate  / 1000.0));
 
 	// For each channel we will
 	// 1. Write the incoming samples into the delay buffer
@@ -53,7 +53,7 @@ void Delay<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 	// 4. Mix into output
 
 	// Get reference to buffer
-	juce::AudioBuffer<SampleType> delayBufferRef	  = mDelayBuffer.getBuffer();
+	juce::AudioBuffer<SampleType> &delayBufferRef	  = mDelayBuffer.getBuffer();
 	auto						  delayBufferWritePtr = delayBufferRef.getArrayOfWritePointers();
 
 	for (int channel = 0; channel < numChannels; ++channel)

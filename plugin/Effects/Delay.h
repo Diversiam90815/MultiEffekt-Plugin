@@ -31,11 +31,11 @@ public:
 	void setFeedback(float newValue);
 
 private:
-	juce::SmoothedValue<float> mDelayTimeMS			 = 500;	 // dummy parameters for now
-	juce::SmoothedValue<float> mFeedback			 = 0.3f; // dummy parameters for now
-	juce::SmoothedValue<float> mMix					 = 0.5f; // dummy parameters for now
+	juce::SmoothedValue<float> mDelayTimeMS;
+	juce::SmoothedValue<float> mFeedback;
+	juce::SmoothedValue<float> mMix;
 
-	int						   mDelayInSamples		 = 0;	 // how many samples the read pointer will be offset (delayTime in Seconds * sampleRate)
+	int						   mDelayInSamples		 = 0; // how many samples the read pointer will be offset (delayTime in Seconds * sampleRate)
 	int						   mCircularBufferLength = 0;
 
 	std::vector<int>		   mWritePositions;
