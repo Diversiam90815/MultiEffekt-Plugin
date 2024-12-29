@@ -1,4 +1,4 @@
-/*
+﻿/*
   ==============================================================================
 
 	Module			MonoPanner
@@ -68,8 +68,8 @@ void MonoPanner<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 		finalPan			  = juce::jlimit<SampleType>((SampleType)-1.0, (SampleType)1.0, (SampleType)finalPan);
 
 		// Convert pan (-1..+1) to left & right gains:
-		//  - leftGain = cos( (pan+1)*pi/4 )
-		//  - rightGain = sin( (pan+1)*pi/4 )
+		//   leftGain  = cos( (pan + 1)*π/4 )
+		//   rightGain = sin( (pan + 1)*π/4 )
 		auto radiantValue	  = juce::MathConstants<SampleType>::pi * ((lfoEnabled ? finalPan : basePan) + 1.0f) * 0.25f;
 		auto leftGain		  = std::cos(radiantValue);
 		auto rightGain		  = std::sin(radiantValue);
