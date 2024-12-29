@@ -46,4 +46,6 @@ private:
 	juce::dsp::Oscillator<SampleType> mLFO;
 
 	double							  mSampleRate = 0;
+
+	std::atomic<bool>				  mLfoEnabled;
 };
