@@ -15,6 +15,8 @@
 #include "Parameters.h"
 #include "Distortion.h"
 #include "Delay.h"
+#include "MonoPanner.h"
+#include "StereoPanner.h"
 
 
 class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
@@ -92,7 +94,13 @@ private:
 
 	Delay<float>					   mDelayModule;
 
-	float mInput;
+	MonoPanner<float>				   mMonoPannerModule;
+
+	StereoPanner<float>				   mStereoPannerModule;
+
+	float							   mInput;
+
+	int								   mNumInputChannels = 0;
 
 	juce::AudioProcessorValueTreeState mValueTreeState;
 

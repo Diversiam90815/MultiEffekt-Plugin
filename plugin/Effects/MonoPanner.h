@@ -36,6 +36,8 @@ public:
 	// Sets the LFO depth. 0.0 = no modulation, 1.0 = full range.
 	void setLfoDepth(float newDepth);
 
+	void setLfoEnabled(bool value);
+
 private:
 	juce::SmoothedValue<float>		  mPan;
 

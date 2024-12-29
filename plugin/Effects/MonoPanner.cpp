@@ -105,5 +105,12 @@ void MonoPanner<SampleType>::setLfoDepth(float newDepth)
 }
 
 
+template <typename SampleType>
+void MonoPanner<SampleType>::setLfoEnabled(bool value)
+{
+	mLfoEnabled.store(value);
+}
+
+
 template class MonoPanner<float>;
 template class MonoPanner<double>;

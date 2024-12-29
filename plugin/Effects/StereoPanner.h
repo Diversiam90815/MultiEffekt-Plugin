@@ -35,6 +35,8 @@ public:
 	void setRightChannelLfoRate(float newFrequency);
 	void setRightChannelLfoDepth(float newDepth);
 
+	void setLfoEnabled(bool value);
+
 private:
 	juce::SmoothedValue<float>		  mLeftChannelPan;
 	juce::SmoothedValue<float>		  mRightChannelPan;
