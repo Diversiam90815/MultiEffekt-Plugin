@@ -40,8 +40,8 @@ void MonoPanner<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 	const int numChannels = buffer.getNumChannels();
 	const int numSamples  = buffer.getNumSamples();
 
-	jassert(mSampleRate == 0); // Call ::prepare before attempting to call ::process()!
-	jassert(numChannels < 2);  // No panning possible with only one channel!
+	jassert(mSampleRate != 0); // Call ::prepare before attempting to call ::process()!
+	jassert(numChannels >= 2); // No panning possible with only one channel!
 	if (numChannels < 2)
 		return;
 
