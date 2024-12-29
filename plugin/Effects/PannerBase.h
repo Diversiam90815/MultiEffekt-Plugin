@@ -23,6 +23,10 @@ public:
 	virtual void process(juce::AudioBuffer<SampleType> &buffer) = 0;
 	virtual void reset()										= 0;
 
+	void		 enableLFO(bool enabled)
+	{
+		mLfoEnabled.store(enabled);
+	}
 
 protected:
 	double getSampleRate() const
@@ -35,11 +39,6 @@ protected:
 		mSampleRate = rate;
 	}
 
-	void		 enableLFO(bool enabled)
-	{
-		mLfoEnabled.store(enabled);
-	}
-
 	bool getLfoEnabled()
 	{
 		return mLfoEnabled.load();
@@ -50,3 +49,6 @@ private:
 
 	std::atomic<bool> mLfoEnabled;
 };
+
+template class PannerBase<float>;
+template class PannerBase<double>;

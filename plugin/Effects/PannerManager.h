@@ -11,12 +11,7 @@
 
 #include "MonoPanner.h"
 #include "StereoPanner.h"
-
-enum PannerType
-{
-	Mono = 1,
-	Stereo
-};
+#include "Parameters.h"
 
 
 template <typename SampleType>
