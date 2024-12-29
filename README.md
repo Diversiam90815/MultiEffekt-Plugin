@@ -7,9 +7,9 @@
 
 ## Effects
 - **Distortion**: Multiple distortion type to select from: Saturation, Hard & Soft Clipping.
-- **Delay** (in development)
+- **Delay**: A flexible delay module supporting different delay times for each channel (currently just Single Tapping Delay; PingPong delay planned)
+- **Panner**: Includes a mono and stereo panner, with dynamic LFO modulation for creative stereo imaging.
 - **Reverb** (in development)
-- **Gain** (in development)
 - **Equalizer** (in development)
 - **Compressor** (in development)
 
