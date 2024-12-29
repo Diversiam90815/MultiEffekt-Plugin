@@ -15,8 +15,11 @@
 #include "Parameters.h"
 #include "Distortion.h"
 #include "Delay.h"
+#include "PannerManager.h"
+
+/*
 #include "MonoPanner.h"
-#include "StereoPanner.h"
+#include "StereoPanner.h"*/
 
 
 class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
@@ -86,6 +89,14 @@ public:
 private:
 	void							   updateParameters();
 
+	void							   updateGainParameter();
+
+	void							   updateDelayParameter();
+
+	void							   updateDistortionParameter();
+
+	void							   updatePannerParameter();
+
 	//==============================================================================
 	//						PRIVATE OBJECTS
 	//==============================================================================
@@ -94,9 +105,7 @@ private:
 
 	Delay<float>					   mDelayModule;
 
-	MonoPanner<float>				   mMonoPannerModule;
-
-	StereoPanner<float>				   mStereoPannerModule;
+	PannerManager<float>			   mPanner;
 
 	float							   mInput;
 

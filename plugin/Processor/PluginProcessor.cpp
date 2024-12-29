@@ -26,10 +26,10 @@ PluginProcessor::PluginProcessor()
 {
 	mValueTreeState.addParameterListener(paramInput, this);
 	mValueTreeState.addParameterListener(paramOutput, this);
-	mValueTreeState.addParameterListener(paramDrive, this);
-	mValueTreeState.addParameterListener(paramBlendDist, this);
-	mValueTreeState.addParameterListener(paramDistModel, this);
-	mValueTreeState.addParameterListener(paramBlendDelay, this);
+	mValueTreeState.addParameterListener(paramDistortionDrive, this);
+	mValueTreeState.addParameterListener(paramMixDistortion, this);
+	mValueTreeState.addParameterListener(paramDistortionType, this);
+	mValueTreeState.addParameterListener(paramMixDelay, this);
 	mValueTreeState.addParameterListener(paramDelayTimeLeft, this);
 	mValueTreeState.addParameterListener(paramDelayTimeRight, this);
 	mValueTreeState.addParameterListener(paramDelayFeedback, this);
@@ -51,10 +51,10 @@ PluginProcessor::~PluginProcessor()
 {
 	mValueTreeState.removeParameterListener(paramInput, this);
 	mValueTreeState.removeParameterListener(paramOutput, this);
-	mValueTreeState.removeParameterListener(paramDrive, this);
-	mValueTreeState.removeParameterListener(paramBlendDist, this);
-	mValueTreeState.removeParameterListener(paramDistModel, this);
-	mValueTreeState.removeParameterListener(paramBlendDelay, this);
+	mValueTreeState.removeParameterListener(paramDistortionDrive, this);
+	mValueTreeState.removeParameterListener(paramMixDistortion, this);
+	mValueTreeState.removeParameterListener(paramDistortionType, this);
+	mValueTreeState.removeParameterListener(paramMixDelay, this);
 	mValueTreeState.removeParameterListener(paramDelayTimeLeft, this);
 	mValueTreeState.removeParameterListener(paramDelayTimeRight, this);
 	mValueTreeState.removeParameterListener(paramDelayFeedback, this);
@@ -154,10 +154,8 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 	mDistortionModule.prepare(spec);
 	mDelayModule.prepare(spec, 2000);
 
-	if (mNumInputChannels == 1)
-		mMonoPannerModule.prepare(spec);
-	else if (mNumInputChannels == 2)
-		mStereoPannerModule.prepare(spec);
+	mPanner.setPannerMode(mNumInputChannels);
+	mPanner.prepare(spec);
 
 	updateParameters();
 }
@@ -209,10 +207,7 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiB
 
 	mDelayModule.process(buffer);
 
-	if (mNumInputChannels == 1)
-		mMonoPannerModule.process(buffer);
-	else if (mNumInputChannels == 2)
-		mStereoPannerModule.process(buffer);
+	mPanner.process(buffer);
 }
 
 
@@ -243,50 +238,28 @@ void PluginProcessor::setStateInformation(const void *data, int sizeInBytes)
 
 void PluginProcessor::updateParameters()
 {
+	updateGainParameter();
+
+	updateDistortionParameter();
+
+	updateDelayParameter();
+
+	updatePannerParameter();
+}
+
+
+void PluginProcessor::updateGainParameter()
+{
 	mInput = mValueTreeState.getRawParameterValue(paramInput)->load();
+}
 
-	mDistortionModule.setDrive(mValueTreeState.getRawParameterValue(paramDrive)->load());
-	mDistortionModule.setOutput(mValueTreeState.getRawParameterValue(paramOutput)->load());
-	mDistortionModule.setMix(mValueTreeState.getRawParameterValue(paramBlendDist)->load());
 
-	mDelayModule.setMix(mValueTreeState.getRawParameterValue(paramBlendDelay)->load());
+void PluginProcessor::updateDelayParameter()
+{
+	mDelayModule.setMix(mValueTreeState.getRawParameterValue(paramMixDelay)->load());
 	mDelayModule.setChannelDelayTime(0, mValueTreeState.getRawParameterValue(paramDelayTimeLeft)->load());
 	mDelayModule.setChannelDelayTime(1, mValueTreeState.getRawParameterValue(paramDelayTimeRight)->load());
 	mDelayModule.setFeedback(mValueTreeState.getRawParameterValue(paramDelayFeedback)->load());
-
-	mMonoPannerModule.setPan(mValueTreeState.getRawParameterValue(paramMonoPanValue)->load());
-	mMonoPannerModule.setLfoRate(mValueTreeState.getRawParameterValue(paramMonoLfoFreq)->load());
-	mMonoPannerModule.setLfoDepth(mValueTreeState.getRawParameterValue(paramMonoLfoDepth)->load());
-	//mMonoPannerModule.setLfoEnabled(mValueTreeState.getRawParameterValue(paramPannerLfoEnabled)->load());
-
-	mStereoPannerModule.setLeftChannelPan(mValueTreeState.getRawParameterValue(paramStereoLeftPanValue)->load());
-	mStereoPannerModule.setRightChannelPan(mValueTreeState.getRawParameterValue(paramStereoRightPanValue)->load());
-	mStereoPannerModule.setLeftChannelLfoRate(mValueTreeState.getRawParameterValue(paramStereoLeftLfoFreq)->load());
-	mStereoPannerModule.setRightChannelLfoRate(mValueTreeState.getRawParameterValue(paramStereoRightLfoFreq)->load());
-	mStereoPannerModule.setLeftChannelLfoDepth(mValueTreeState.getRawParameterValue(paramStereoLeftLfoDepth)->load());
-	mStereoPannerModule.setRightChannelLfoDepth(mValueTreeState.getRawParameterValue(paramStereoRightLfoDepth)->load());
-	//mStereoPannerModule.setLfoEnabled(mValueTreeState.getRawParameterValue(paramPannerLfoEnabled)->load());
-
-	auto model = static_cast<int>(mValueTreeState.getRawParameterValue(paramDistModel)->load());
-	switch (model)
-	{
-	case 0:
-	{
-		mDistortionModule.setCurrentDistortionType(DistortionType::hardClipping);
-		break;
-	}
-	case 1:
-	{
-		mDistortionModule.setCurrentDistortionType(DistortionType::softClipping);
-		break;
-	}
-	case 2:
-	{
-		mDistortionModule.setCurrentDistortionType(DistortionType::saturation);
-		break;
-	}
-	default: break;
-	}
 
 	auto delayMode = static_cast<int>(mValueTreeState.getRawParameterValue(paramDelayModel)->load());
 	switch (delayMode)
@@ -306,6 +279,53 @@ void PluginProcessor::updateParameters()
 }
 
 
+void PluginProcessor::updateDistortionParameter()
+{
+	mDistortionModule.setDrive(mValueTreeState.getRawParameterValue(paramDistortionDrive)->load());
+	mDistortionModule.setOutput(mValueTreeState.getRawParameterValue(paramOutput)->load());
+	mDistortionModule.setMix(mValueTreeState.getRawParameterValue(paramMixDistortion)->load());
+
+	auto model = static_cast<int>(mValueTreeState.getRawParameterValue(paramDistortionType)->load());
+	switch (model)
+	{
+	case 0:
+	{
+		mDistortionModule.setCurrentDistortionType(DistortionType::hardClipping);
+		break;
+	}
+	case 1:
+	{
+		mDistortionModule.setCurrentDistortionType(DistortionType::softClipping);
+		break;
+	}
+	case 2:
+	{
+		mDistortionModule.setCurrentDistortionType(DistortionType::saturation);
+		break;
+	}
+	default: break;
+	}
+}
+
+
+void PluginProcessor::updatePannerParameter()
+{
+	mPanner.enableLFO(mValueTreeState.getRawParameterValue(paramPannerLfoEnabled)->load());
+
+	if (mNumInputChannels == 1) // Mono
+	{
+		mPanner.processMonoPanner(mValueTreeState.getRawParameterValue(paramMonoPanValue)->load(), mValueTreeState.getRawParameterValue(paramMonoLfoFreq)->load(),
+								  mValueTreeState.getRawParameterValue(paramMonoLfoDepth)->load());
+	}
+	else // Stereo
+	{
+		mPanner.processStereoPanner(mValueTreeState.getRawParameterValue(paramStereoLeftPanValue)->load(), mValueTreeState.getRawParameterValue(paramStereoRightPanValue)->load(),
+									mValueTreeState.getRawParameterValue(paramStereoLeftLfoFreq)->load(), mValueTreeState.getRawParameterValue(paramStereoRightLfoFreq)->load(),
+									mValueTreeState.getRawParameterValue(paramStereoLeftLfoDepth)->load(), mValueTreeState.getRawParameterValue(paramStereoRightLfoDepth)->load());
+	}
+}
+
+
 juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameterLayout()
 {
 	std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
@@ -315,20 +335,19 @@ juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParam
 	auto output			 = std::make_unique<juce::AudioParameterFloat>(paramOutput, outputName, outputMinValue, outputMaxValue, outputDefaultValue);
 
 	// Distortion
-	auto distModel		 = std::make_unique<juce::AudioParameterChoice>(paramDistModel, distModelName, distModelsArray, 0);
-	auto drive			 = std::make_unique<juce::AudioParameterFloat>(paramDrive, driveName, driveMinValue, driveMaxValue, driveDefaultValue);
-	auto blendDistortion = std::make_unique<juce::AudioParameterFloat>(paramBlendDist, blendNameDistortion, blendMinValue, blendMaxValue, blendDefaultValue);
+	auto distModel		 = std::make_unique<juce::AudioParameterChoice>(paramDistortionType, distortionTypeName, distortionTypeArray, 0);
+	auto drive			 = std::make_unique<juce::AudioParameterFloat>(paramDistortionDrive, distortionDriveName, distortionDriveMin, distortionDriveMax, distortionDriveDefault);
+	auto blendDistortion = std::make_unique<juce::AudioParameterFloat>(paramMixDistortion, distortionMixName, mixMinValue, mixMaxValue, mixDefaultValue);
 
 	// Delay
-	auto delayModel		 = std::make_unique<juce::AudioParameterChoice>(paramDelayModel, delayModelName, delayModelArray, 0);
-	auto blendDelay		 = std::make_unique<juce::AudioParameterFloat>(paramBlendDelay, blendNameDelay, blendMinValue, blendMaxValue, blendDefaultValue);
-	auto delayTimeLeft	 = std::make_unique<juce::AudioParameterFloat>(paramDelayTimeLeft, delayTimeNameLeft, delayTimeMinValue, delayTimeMaxValue, delayTimeDefaultValue);
-	auto delayTimeRight	 = std::make_unique<juce::AudioParameterFloat>(paramDelayTimeRight, delayTimeNameRight, delayTimeMinValue, delayTimeMaxValue, delayTimeDefaultValue);
-	auto delayFeedback =
-		std::make_unique<juce::AudioParameterFloat>(paramDelayFeedback, delayFeedbackName, delayFeedbackMinValue, delayFeedbackMaxValue, delayFeedbackDefaultValue);
+	auto delayModel		 = std::make_unique<juce::AudioParameterChoice>(paramDelayModel, delayTypeName, delayTypeArray, 0);
+	auto blendDelay		 = std::make_unique<juce::AudioParameterFloat>(paramMixDelay, delayMixName, mixMinValue, mixMaxValue, mixDefaultValue);
+	auto delayTimeLeft	 = std::make_unique<juce::AudioParameterFloat>(paramDelayTimeLeft, delayTimeNameLeft, delayTimeMin, delayTimeMax, delayTimeDefault);
+	auto delayTimeRight	 = std::make_unique<juce::AudioParameterFloat>(paramDelayTimeRight, delayTimeNameRight, delayTimeMin, delayTimeMax, delayTimeDefault);
+	auto delayFeedback	 = std::make_unique<juce::AudioParameterFloat>(paramDelayFeedback, delayFeedbackName, delayFeedbackMin, delayFeedbackMax, delayFeedbackDefault);
 
 	// Panner
-	auto monoPanValue = std::make_unique<juce::AudioParameterFloat>(paramMonoPanValue, monoPanValueName, monoPanValueMin, monoPanValueMax, monoPanValueDefault);
+	auto monoPanValue	 = std::make_unique<juce::AudioParameterFloat>(paramMonoPanValue, monoPanValueName, monoPanValueMin, monoPanValueMax, monoPanValueDefault);
 	auto stereoLeftPanValue =
 		std::make_unique<juce::AudioParameterFloat>(paramStereoLeftPanValue, stereoLeftPanValueName, stereoLeftPanValueMin, stereoLeftPanValueMax, stereoLeftPanValueDefault);
 	auto stereoRightPanValue =

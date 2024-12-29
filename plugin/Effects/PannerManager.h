@@ -1,9 +1,18 @@
+/*
+  ==============================================================================
+
+	Module			PannerManager
+	Description		Managing multiple panner modules depending on type
+
+  ==============================================================================
+*/
 
 #pragma once
+
 #include "MonoPanner.h"
 #include "StereoPanner.h"
 
-enum PannerMode
+enum PannerType
 {
 	Mono = 1,
 	Stereo
@@ -27,9 +36,12 @@ public:
 
 	void enableLFO(bool enabled);
 
+	void processMonoPanner(float pan, float lfoFreq, float lfoDepth);
+
+	void processStereoPanner(float leftPan, float rightPan, float leftLfoFreq, float rightLfoFreq, float leftLfoDepth, float rightLfoDepth);
 
 private:
-	PannerMode				 mPannerMode;
+	PannerType				 mPannerMode;
 
 	int						 mNumInputChannels = 0;
 

@@ -32,28 +32,27 @@ constexpr float			outputMinValue			   = -24.0f;
 constexpr float			outputMaxValue			   = 24.0f;
 constexpr float			outputDefaultValue		   = 0.0f;
 
+constexpr auto			paramMixDelay			   = "drywetDelay";
+constexpr auto			paramMixDistortion		   = "drywetDistortion";
+constexpr auto			delayMixName			   = "Mix (Delay)";
+constexpr auto			distortionMixName		   = "Mix (Distortion)";
+constexpr float			mixMinValue				   = 0.0f;
+constexpr float			mixMaxValue				   = 1.0f;
+constexpr float			mixDefaultValue			   = 0.0f;
 
 //==============================================
 //				Distortion
 //==============================================
 
-constexpr auto			paramDrive				   = "drive";
-constexpr auto			driveName				   = "Drive";
-constexpr float			driveMinValue			   = 0.0f;
-constexpr float			driveMaxValue			   = 24.0f;
-constexpr float			driveDefaultValue		   = 0.0f;
+constexpr auto			paramDistortionDrive	   = "drive";
+constexpr auto			distortionDriveName		   = "Drive";
+constexpr float			distortionDriveMin		   = 0.0f;
+constexpr float			distortionDriveMax		   = 24.0f;
+constexpr float			distortionDriveDefault	   = 0.0f;
 
-constexpr auto			paramBlendDist			   = "drywetDistortion";
-constexpr auto			blendNameDistortion		   = "Dry/Wet (Distortion)";
-constexpr auto			blendNameDelay			   = "Dry/Wet (Delay)";
-constexpr auto			paramBlendDelay			   = "drywetDelay";
-constexpr float			blendMinValue			   = 0.0f;
-constexpr float			blendMaxValue			   = 1.0f;
-constexpr float			blendDefaultValue		   = 0.0f;
-
-constexpr auto			paramDistModel			   = "distortiontype";
-constexpr auto			distModelName			   = "Type";
-const juce::StringArray distModelsArray			   = {"Hard", "Soft", "Saturation"};
+constexpr auto			paramDistortionType		   = "distortiontype";
+constexpr auto			distortionTypeName		   = "Type";
+const juce::StringArray distortionTypeArray		   = {"Hard", "Soft", "Saturation"};
 
 
 //==============================================
@@ -62,21 +61,21 @@ const juce::StringArray distModelsArray			   = {"Hard", "Soft", "Saturation"};
 
 constexpr auto			paramDelayTimeLeft		   = "delayTimeMSLeft";
 constexpr auto			delayTimeNameLeft		   = "Delay Time in MS (Left)";
-constexpr auto			delayTimeNameRight		   = "Delay Time in MS (Right)";
 constexpr auto			paramDelayTimeRight		   = "delayTimeMSRight";
-constexpr float			delayTimeMinValue		   = 0.0f;
-constexpr float			delayTimeMaxValue		   = 2000.f; // 2 Seconds of maximum delay time
-constexpr float			delayTimeDefaultValue	   = 0.0f;
+constexpr auto			delayTimeNameRight		   = "Delay Time in MS (Right)";
+constexpr float			delayTimeMin			   = 0.0f;
+constexpr float			delayTimeMax			   = 2000.f; // 2 Seconds of maximum delay time
+constexpr float			delayTimeDefault		   = 0.0f;
 
 constexpr auto			paramDelayFeedback		   = "delayFeedback";
 constexpr auto			delayFeedbackName		   = "Feedback";
-constexpr float			delayFeedbackMinValue	   = 0.0f;
-constexpr float			delayFeedbackMaxValue	   = 1.0f;
-constexpr float			delayFeedbackDefaultValue  = 0.0f;
+constexpr float			delayFeedbackMin		   = 0.0f;
+constexpr float			delayFeedbackMax		   = 1.0f;
+constexpr float			delayFeedbackDefault	   = 0.0f;
 
 constexpr auto			paramDelayModel			   = "delaytype";
-constexpr auto			delayModelName			   = "Type";
-const juce::StringArray delayModelArray			   = {"Single Tap", "Ping Pong"};
+constexpr auto			delayTypeName			   = "Type";
+const juce::StringArray delayTypeArray			   = {"Single Tap", "Ping Pong"};
 
 
 //==============================================
@@ -160,4 +159,10 @@ enum DelayType
 {
 	SingleTap = 1,
 	PingPong
+};
+
+enum PannerType
+{
+	Mono = 1,
+	Stereo
 };
