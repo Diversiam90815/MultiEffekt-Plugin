@@ -38,7 +38,7 @@ private:
 	juce::SmoothedValue<float>				mFeedback;
 	juce::SmoothedValue<float>				mMix;
 
-	std::vector<juce::SmoothedValue<float>> mChannelDelayTimes;	// Using different delay times for each channel
+	std::vector<juce::SmoothedValue<float>> mChannelDelayTimes; // Using different delay times for each channel
 
 	int										mCircularBufferLength = 0;
 

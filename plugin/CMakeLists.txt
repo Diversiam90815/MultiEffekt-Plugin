@@ -58,6 +58,7 @@ set(Processor_Files
 set(Effect_Files 
         ${EFFECTS_DIR}/Distortion.h         ${EFFECTS_DIR}/Distortion.cpp
         ${EFFECTS_DIR}/Delay.h              ${EFFECTS_DIR}/Delay.cpp
+        ${EFFECTS_DIR}/Panner.h             ${EFFECTS_DIR}/Panner.cpp
 )
 
 set(UI_Files 
