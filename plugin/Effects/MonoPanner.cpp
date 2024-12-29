@@ -1,17 +1,17 @@
 /*
   ==============================================================================
 
-	Module			Panner
-	Description		Panner effect module
+	Module			MonoPanner
+	Description		Panner effect module handling mono input signals
 
   ==============================================================================
 */
 
-#include "Panner.h"
+#include "MonoPanner.h"
 
 
 template <typename SampleType>
-Panner<SampleType>::Panner()
+MonoPanner<SampleType>::MonoPanner()
 {
 	// Initialize the LFO with a sine wave
 	mLFO.initialise([](SampleType x) { return std::sin(x); });
@@ -19,7 +19,7 @@ Panner<SampleType>::Panner()
 
 
 template <typename SampleType>
-void Panner<SampleType>::prepare(const juce::dsp::ProcessSpec &spec)
+void MonoPanner<SampleType>::prepare(const juce::dsp::ProcessSpec &spec)
 {
 	mSampleRate = spec.sampleRate;
 	mLFO.prepare(spec);
@@ -28,14 +28,14 @@ void Panner<SampleType>::prepare(const juce::dsp::ProcessSpec &spec)
 
 
 template <typename SampleType>
-void Panner<SampleType>::reset()
+void MonoPanner<SampleType>::reset()
 {
 	mLFO.reset();
 }
 
 
 template <typename SampleType>
-void Panner<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
+void MonoPanner<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 {
 	const int numChannels = buffer.getNumChannels();
 	const int numSamples  = buffer.getNumSamples();
@@ -85,25 +85,25 @@ void Panner<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 
 
 template <typename SampleType>
-void Panner<SampleType>::setPan(float newPan)
+void MonoPanner<SampleType>::setPan(float newPan)
 {
 	mPan.setTargetValue(newPan);
 }
 
 
 template <typename SampleType>
-void Panner<SampleType>::setLfoRate(float newFrequency)
+void MonoPanner<SampleType>::setLfoRate(float newFrequency)
 {
 	mLfoFrequency.setTargetValue(newFrequency);
 }
 
 
 template <typename SampleType>
-void Panner<SampleType>::setLfoDepth(float newDepth)
+void MonoPanner<SampleType>::setLfoDepth(float newDepth)
 {
 	mLfoDepth.setTargetValue(newDepth);
 }
 
 
-template class Panner<float>;
-template class Panner<double>;
+template class MonoPanner<float>;
+template class MonoPanner<double>;

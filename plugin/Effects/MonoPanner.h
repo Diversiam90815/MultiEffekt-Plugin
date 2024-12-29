@@ -1,8 +1,8 @@
 /*
   ==============================================================================
 
-	Module			Panner
-	Description		Panner effect module
+	Module			MonoPanner
+	Description		Panner effect module handling mono input signals
 
   ==============================================================================
 */
@@ -14,11 +14,11 @@
 
 
 template <typename SampleType>
-class Panner
+class MonoPanner
 {
 public:
-	Panner();
-	~Panner() = default;
+	MonoPanner();
+	~MonoPanner() = default;
 
 	void prepare(const juce::dsp::ProcessSpec &spec);
 
