@@ -257,7 +257,7 @@ void PluginProcessor::updateParameters()
 	mMonoPannerModule.setPan(mValueTreeState.getRawParameterValue(paramMonoPanValue)->load());
 	mMonoPannerModule.setLfoRate(mValueTreeState.getRawParameterValue(paramMonoLfoFreq)->load());
 	mMonoPannerModule.setLfoDepth(mValueTreeState.getRawParameterValue(paramMonoLfoDepth)->load());
-	mMonoPannerModule.setLfoEnabled(mValueTreeState.getRawParameterValue(paramPannerLfoEnabled)->load());
+	//mMonoPannerModule.setLfoEnabled(mValueTreeState.getRawParameterValue(paramPannerLfoEnabled)->load());
 
 	mStereoPannerModule.setLeftChannelPan(mValueTreeState.getRawParameterValue(paramStereoLeftPanValue)->load());
 	mStereoPannerModule.setRightChannelPan(mValueTreeState.getRawParameterValue(paramStereoRightPanValue)->load());
@@ -265,7 +265,7 @@ void PluginProcessor::updateParameters()
 	mStereoPannerModule.setRightChannelLfoRate(mValueTreeState.getRawParameterValue(paramStereoRightLfoFreq)->load());
 	mStereoPannerModule.setLeftChannelLfoDepth(mValueTreeState.getRawParameterValue(paramStereoLeftLfoDepth)->load());
 	mStereoPannerModule.setRightChannelLfoDepth(mValueTreeState.getRawParameterValue(paramStereoRightLfoDepth)->load());
-	mStereoPannerModule.setLfoEnabled(mValueTreeState.getRawParameterValue(paramPannerLfoEnabled)->load());
+	//mStereoPannerModule.setLfoEnabled(mValueTreeState.getRawParameterValue(paramPannerLfoEnabled)->load());
 
 	auto model = static_cast<int>(mValueTreeState.getRawParameterValue(paramDistModel)->load());
 	switch (model)

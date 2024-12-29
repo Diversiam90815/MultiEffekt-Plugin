@@ -9,23 +9,22 @@
 
 #pragma once
 
-#include <juce_audio_basics/juce_audio_basics.h>
-#include <juce_dsp/juce_dsp.h>
+#include "PannerBase.h"
 
 
 template <typename SampleType>
-class MonoPanner
+class MonoPanner : public PannerBase<SampleType>
 {
 public:
 	MonoPanner();
 	~MonoPanner() = default;
 
-	void prepare(const juce::dsp::ProcessSpec &spec);
+	void prepare(const juce::dsp::ProcessSpec &spec) override;
 
 	// Resets any internal states (LFO phase, etc.)
-	void reset();
+	void reset() override;
 
-	void process(juce::AudioBuffer<SampleType> &buffer);
+	void process(juce::AudioBuffer<SampleType> &buffer) override;
 
 	// Sets the static (base) pan value. Range typically -1.0 = hard left, 1.0 = hard right, 0.0 = center.
 	void setPan(float newPan);
@@ -36,8 +35,6 @@ public:
 	// Sets the LFO depth. 0.0 = no modulation, 1.0 = full range.
 	void setLfoDepth(float newDepth);
 
-	void setLfoEnabled(bool value);
-
 private:
 	juce::SmoothedValue<float>		  mPan;
 
@@ -46,8 +43,4 @@ private:
 	juce::SmoothedValue<float>		  mLfoDepth;
 
 	juce::dsp::Oscillator<SampleType> mLFO;
-
-	double							  mSampleRate = 0;
-
-	std::atomic<bool>				  mLfoEnabled;
 };

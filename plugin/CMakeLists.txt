@@ -60,6 +60,8 @@ set(Effect_Files
         ${EFFECTS_DIR}/Delay.h              ${EFFECTS_DIR}/Delay.cpp
         ${EFFECTS_DIR}/MonoPanner.h         ${EFFECTS_DIR}/MonoPanner.cpp
         ${EFFECTS_DIR}/StereoPanner.h       ${EFFECTS_DIR}/StereoPanner.cpp
+        ${EFFECTS_DIR}/PannerManager.h      ${EFFECTS_DIR}/PannerManager.cpp
+        ${EFFECTS_DIR}/PannerBase.h
 )
 
 set(UI_Files 

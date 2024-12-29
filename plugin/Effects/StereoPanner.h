@@ -9,21 +9,19 @@
 
 #pragma once
 
-#include <juce_audio_basics/juce_audio_basics.h>
-#include <juce_dsp/juce_dsp.h>
-
+#include "PannerBase.h"
 
 template <typename SampleType>
-class StereoPanner
+class StereoPanner : public PannerBase<SampleType>
 {
 public:
 	StereoPanner();
 	~StereoPanner() = default;
 
-	void prepare(const juce::dsp::ProcessSpec &spec);
-	void reset();
+	void prepare(const juce::dsp::ProcessSpec &spec) override;
+	void reset() override;
 
-	void process(juce::AudioBuffer<SampleType> &buffer);
+	void process(juce::AudioBuffer<SampleType> &buffer) override;
 
 	// --- Set parameters for left channel
 	void setLeftChannelPan(float newPan);
@@ -35,7 +33,6 @@ public:
 	void setRightChannelLfoRate(float newFrequency);
 	void setRightChannelLfoDepth(float newDepth);
 
-	void setLfoEnabled(bool value);
 
 private:
 	juce::SmoothedValue<float>		  mLeftChannelPan;
@@ -49,8 +46,4 @@ private:
 
 	juce::dsp::Oscillator<SampleType> mLeftChannelLFO;
 	juce::dsp::Oscillator<SampleType> mRightChannelLFO;
-
-	double							  mSampleRate = 0;
-
-	std::atomic<bool>				  mLfoEnabled;
 };

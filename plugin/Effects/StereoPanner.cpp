@@ -22,8 +22,8 @@ inline StereoPanner<SampleType>::StereoPanner()
 template <typename SampleType>
 void StereoPanner<SampleType>::prepare(const juce::dsp::ProcessSpec &spec)
 {
-	mSampleRate = spec.sampleRate;
-
+	PannerBase<SampleType>::setSampleRate(spec.sampleRate);
+	
 	mLeftChannelLFO.prepare(spec);
 	mRightChannelLFO.prepare(spec);
 
@@ -44,8 +44,9 @@ void StereoPanner<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 {
 	const int numChannels = buffer.getNumChannels();
 	const int numSamples  = buffer.getNumSamples();
+	const double samplerate  = PannerBase<SampleType>::getSampleRate();
 
-	jassert(mSampleRate != 0); // Call ::prepare before attempting to call ::process()!
+	jassert(samplerate != 0);  // Call ::prepare before attempting to call ::process()!
 	jassert(numChannels >= 2); // No panning possible with only one channel!
 	if (numChannels < 2)
 		return;
@@ -63,11 +64,11 @@ void StereoPanner<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 	float rightLfoFreq	= mRightChannelLfoFrequency.getNextValue();
 	float rightLfoDepth = mRightChannelLfoDepth.getNextValue();
 
-	bool  lfoEnabled	= mLfoEnabled.load();
+	bool  lfoEnabled	= PannerBase<SampleType>::getLfoEnabled();
 
 	// Update LFO frequencies
-	mLeftChannelLFO.setFrequency(leftLfoFreq, mSampleRate);
-	mRightChannelLFO.setFrequency(rightLfoFreq, mSampleRate);
+	mLeftChannelLFO.setFrequency(leftLfoFreq, samplerate);
+	mRightChannelLFO.setFrequency(rightLfoFreq, samplerate);
 
 	for (int sample = 0; sample < numSamples; ++sample)
 	{
@@ -154,12 +155,6 @@ template <typename SampleType>
 void StereoPanner<SampleType>::setRightChannelLfoDepth(float newDepth)
 {
 	mRightChannelLfoDepth.setTargetValue(newDepth);
-}
-
-template <typename SampleType>
-void StereoPanner<SampleType>::setLfoEnabled(bool value)
-{
-	mLfoEnabled.store(value);
 }
 
 
