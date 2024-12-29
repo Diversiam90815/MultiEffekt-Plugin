@@ -12,6 +12,7 @@
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <juce_dsp/juce_dsp.h>
 
+
 template <typename SampleType>
 class PannerBase
 {

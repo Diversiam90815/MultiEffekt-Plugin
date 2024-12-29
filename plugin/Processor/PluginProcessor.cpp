@@ -12,7 +12,8 @@
 
 
 PluginProcessor::PluginProcessor()
-	: AudioProcessor(BusesProperties().withInput("Input", juce::AudioChannelSet::stereo(), true).withOutput("Output", juce::AudioChannelSet::stereo(), true)), mValueTreeState(*this, nullptr, "PARAMETERS", createParameterLayout())
+	: AudioProcessor(BusesProperties().withInput("Input", juce::AudioChannelSet::stereo(), true).withOutput("Output", juce::AudioChannelSet::stereo(), true)),
+	  mValueTreeState(*this, nullptr, "PARAMETERS", createParameterLayout())
 {
 	mValueTreeState.addParameterListener(paramInput, this);
 	mValueTreeState.addParameterListener(paramOutput, this);
@@ -106,17 +107,20 @@ int PluginProcessor::getCurrentProgram()
 
 void PluginProcessor::setCurrentProgram(int index)
 {
+	juce::ignoreUnused(index);
 }
 
 
 const juce::String PluginProcessor::getProgramName(int index)
 {
+	juce::ignoreUnused(index);
 	return {};
 }
 
 
 void PluginProcessor::changeProgramName(int index, const juce::String &newName)
 {
+	juce::ignoreUnused(index, newName);
 }
 
 
@@ -166,7 +170,8 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiB
 	auto					totalNumOutputChannels = getTotalNumOutputChannels();
 
 	// Apply input gain
-	buffer.applyGain(juce::Decibels::decibelsToGain(mInput));
+	float					inputLevel			   = mInput.getNextValue();
+	buffer.applyGain(juce::Decibels::decibelsToGain(inputLevel));
 
 	for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
 		buffer.clear(i, 0, buffer.getNumSamples());
@@ -178,6 +183,10 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiB
 	mDelayModule.process(buffer);
 
 	mPanner.process(buffer);
+
+	// Apply output gain
+	float outputLevel = mOutput.getNextValue();
+	buffer.applyGain(juce::Decibels::decibelsToGain(outputLevel));
 }
 
 
@@ -198,11 +207,13 @@ juce::AudioProcessorEditor *PluginProcessor::createEditor()
 
 void PluginProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
+	juce::ignoreUnused(destData);
 }
 
 
 void PluginProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
+	juce::ignoreUnused(data, sizeInBytes);
 }
 
 
@@ -220,7 +231,8 @@ void PluginProcessor::updateParameters()
 
 void PluginProcessor::updateGainParameter()
 {
-	mInput = mValueTreeState.getRawParameterValue(paramInput)->load();
+	setInput(mValueTreeState.getRawParameterValue(paramInput)->load());
+	setOutput(mValueTreeState.getRawParameterValue(paramOutput)->load());
 }
 
 
@@ -293,6 +305,18 @@ void PluginProcessor::updatePannerParameter()
 									mValueTreeState.getRawParameterValue(paramStereoLeftLfoFreq)->load(), mValueTreeState.getRawParameterValue(paramStereoRightLfoFreq)->load(),
 									mValueTreeState.getRawParameterValue(paramStereoLeftLfoDepth)->load(), mValueTreeState.getRawParameterValue(paramStereoRightLfoDepth)->load());
 	}
+}
+
+
+void PluginProcessor::setOutput(float value)
+{
+	mOutput.setTargetValue(value);
+}
+
+
+void PluginProcessor::setInput(float value)
+{
+	mInput.setTargetValue(value);
 }
 
 

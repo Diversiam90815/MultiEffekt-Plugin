@@ -77,6 +77,9 @@ private:
 
 	void							   updatePannerParameter();
 
+	void							   setOutput(float value);
+
+	void							   setInput(float value);
 
 	Distortion<float>				   mDistortionModule;
 
@@ -84,7 +87,9 @@ private:
 
 	PannerManager<float>			   mPanner;
 
-	float							   mInput;
+	juce::SmoothedValue<float>		   mInput;
+
+	juce::SmoothedValue<float>		   mOutput;
 
 	int								   mNumInputChannels = 0;
 
