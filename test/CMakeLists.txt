@@ -20,12 +20,14 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/../plugin/UI/
         ${CMAKE_CURRENT_SOURCE_DIR}/../plugin/Misc/
         ${JUCE_SOURCE_DIR}/modules
+        ${CMAKE_BINARY_DIR}/include  # Include directory where Project.h is generated
+
 )
 
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
-        AudioPlugin
+        MultiEffectPlugin
         GTest::gtest_main
 )
 
