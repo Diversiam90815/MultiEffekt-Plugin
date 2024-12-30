@@ -54,5 +54,5 @@ private:
 
 	float								  mSampleRate			  = 0;
 
-	const float							  mSoftClipperCoefficient = (2.0 / juce::MathConstants<float>::pi);
+	const float						  mSoftClipperCoefficient = (2.0f / juce::MathConstants<float>::pi);
 };
