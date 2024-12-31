@@ -8,6 +8,9 @@ enable_testing()
 
 add_executable(${PROJECT_NAME}
     source/ProcessorTest.cpp
+    source/DelayTest.cpp
+    source/DistortionTest.cpp
+    source/PannerTest.cpp
 )
 
 
