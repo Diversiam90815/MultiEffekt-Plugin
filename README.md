@@ -36,34 +36,34 @@
 Clone the repository including:
 
 ```bash
-git clone https://github.com/Diversiam90815/MultiEffekt-Plugin.git
+git clone git@github.com:Diversiam90815/MultiEffekt-Plugin.git
 ```
 
 ### Build Instructions
 
-#### 1. Prepare the Build Environment
+#### Prepare the Build Environment
 
 Before building the project, you need to generate the necessary build files using CMake. This can be done using the `build.py` script with the `--prepare` or `-p` option.
 
 ```bash
 cd MultiEffekt-Plugin
-python build.py --prepare
+python build.py -p
 ```
 
 For a **Debug** build, add the `--debug` or `-d` option:
 
 ```bash
-python build.py --prepare --debug
+python build.py -pd
 ```
 
 This sets up the build environment for a Debug configuration.
 
-#### 2. Build the Project
+#### Build the Project
 
 To build the project, use the `--build` or `-b` option:
 
 ```bash
-python build.py --build
+python build.py -b
 ```
 
 This will compile the project using the build files generated during the preparation step.
@@ -72,28 +72,10 @@ This will compile the project using the build files generated during the prepara
 - **Debug Build**: To build the project in Debug mode, include the `--debug` or `-d` option:
 
   ```bash
-  python build.py --build --debug
+  python build.py -bd
   ```
 
-**Important**: If you did not run the `--prepare` step separately, the script will automatically prepare the build environment before building.
-
-#### 3. Combined Preparation and Build
-
-You can combine preparation and building in a single command. This is useful if you want to ensure that your build environment is up-to-date before compiling.
-
-- **Release Build**:
-
-  ```bash
-  python build.py --prepare --build
-  ```
-
-- **Debug Build**:
-
-  ```bash
-  python build.py --prepare --build --debug
-  ```
-
-In both cases, including the `--debug` or `-d` option switches the configuration to Debug mode.
+**Important**: You do not need to run the `--prepare` step separately, the script will automatically prepare the build environment before building.
 
 ### Running the Plugin
 
@@ -106,17 +88,8 @@ After a successful build, the application can be found in the build output direc
   - `cpm.cmake` - Installing the currently latest version of CMake's package manager CPM into the Lib folder.
 
 - `plugin/` - Containing the JUCE audio plugin project.
-  - `CMakeLists.txt` - CMake project for the JUCE audio plugin.
-  - `UI/` - Code for the UI
-  - `Buffer/` - Buffer handling modules
-  - `Effects/` - Effect modules utilized by this plugin
-  - `Misc/` - Helper and parameter ressources
-  - `Processor/` - Main plugin processor
 
 - `test/` - Containing the GoogleTest project.
-  - `CMakeLists.txt` - CMake project for the GoogleTest.
-  - `source/` - Contains the source code:
-    - `ProcessorTest.cpp` - A template for writing unit test for the PluginProcessor.
     
 - `CMakeLists.txt` - The top-level CMake build configuration file.
 - `build.py` - Python script to automate build preparation and compilation.
@@ -127,17 +100,9 @@ After a successful build, the application can be found in the build output direc
 
 ## Build Script (`build.py`) Details
 
-The `build.py` script automates setup and compilation with several key features:
-
-- **Automatic Directory Management**: Automatically switches to the correct working directory and restores it afterward.
-- **System Command Execution**: Runs system commands with error handling.
-- **Build Preparation**: Generates build files with CMake, using the specified generator (`Visual Studio 17`). The `--debug` option sets the `TARGET_CONFIG` to `Debug` (default is `Release`).
-- **Build Execution**: Option to clean previous builds and compile the project.
-- **Command-Line Arguments**:
+The `build.py` script automates setup and compilation. It can be used with various coman line arguments:
   - `-p`, `--prepare`: Prepares the project for building or IDE usage.
-    - Example: `python build.py --prepare` (Release build)
   - `-b`, `--build`: Builds the project.
-    - Example: `python build.py --build` (Release build)
   - `-d`, `--debug`: Sets the configuration to Debug mode, usable with `--prepare` and `--build`.
   - `-v`, `--version`: Prints the installed CMake and Python versions.
 
@@ -179,12 +144,6 @@ The `build.py` script automates setup and compilation with several key features:
   python build.py --prepare --build
   ```
 
-- **Prepare and Build the Project in Debug Mode**:
-
-  ```bash
-  python build.py --prepare --build --debug
-  ```
-
 **Note**: The `--debug` or `-d` option affects both preparation and building steps. If you include it, both steps will use the Debug configuration.
 
 
@@ -200,11 +159,3 @@ This project includes a `.clang-format` file that defines the code style guideli
 
 This will format your code based on the rules specified in the `.clang-format` file, ensuring consistency and improving code readability.
 
-
-## Customization
-
-You can customize the project by modifying:
-
-- **Plugin Information**: Update the company name, manufacturer code, plugin code, and product name in `CMakeLists.txt`.
-- **JUCE Modules**: Enable or disable JUCE modules as needed.
-- **Source Code**: Implement your plugin logic in `PluginProcessor.cpp` and design your GUI in `PluginEditor.cpp`.
