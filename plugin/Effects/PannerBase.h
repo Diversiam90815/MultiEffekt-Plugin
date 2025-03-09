@@ -46,10 +46,11 @@ protected:
 	}
 
 private:
-	double			  mSampleRate = 0;
+	double			  mSampleRate{0};
 
 	std::atomic<bool> mLfoEnabled;
 };
+
 
 template class PannerBase<float>;
 template class PannerBase<double>;

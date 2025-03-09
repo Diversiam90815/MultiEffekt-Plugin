@@ -18,6 +18,7 @@ class Distortion
 {
 public:
 	Distortion();
+	~Distortion() = default;
 
 	void prepare(juce::dsp::ProcessSpec &spec);
 
@@ -52,7 +53,7 @@ private:
 
 	std::atomic<DistortionType>			  mDistortionType;
 
-	float								  mSampleRate			  = 0;
+	float								  mSampleRate{0};
 
-	const float						  mSoftClipperCoefficient = (2.0f / juce::MathConstants<float>::pi);
+	const float							  mSoftClipperCoefficient = (2.0f / juce::MathConstants<float>::pi);
 };

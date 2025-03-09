@@ -13,7 +13,6 @@
 template <typename SampleType>
 Delay<SampleType>::Delay()
 {
-	mDelayType = DelayType::SingleTap;
 }
 
 
@@ -148,7 +147,6 @@ void Delay<SampleType>::setChannelDelayTime(int channel, float timeInMS)
 
 	mChannelDelayTimes[channel].setTargetValue(timeInMS);
 }
-
 
 
 // Declare Distortion Template Classes that may be used

@@ -22,7 +22,7 @@ class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessor
 {
 public:
 	PluginProcessor();
-	~PluginProcessor() override;
+	~PluginProcessor();
 
 
 	juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -31,7 +31,7 @@ public:
 
 	void												prepareToPlay(double sampleRate, int samplesPerBlock) override;
 
-	void												releaseResources() override;
+	void												releaseResources() override {}
 
 	bool												isBusesLayoutSupported(const BusesLayout &layouts) const override;
 
@@ -39,31 +39,31 @@ public:
 
 	juce::AudioProcessorEditor						   *createEditor() override;
 
-	bool												hasEditor() const override;
+	bool												hasEditor() const override { return true; }
 
-	const juce::String									getName() const override;
+	const juce::String									getName() const override {}
 
-	bool												acceptsMidi() const override;
+	bool												acceptsMidi() const override { return false; }
 
-	bool												producesMidi() const override;
+	bool												producesMidi() const override { return false; }
 
-	bool												isMidiEffect() const override;
+	bool												isMidiEffect() const override { return false; }
 
-	double												getTailLengthSeconds() const override;
+	double												getTailLengthSeconds() const override { return 0.0; }
 
-	int													getNumPrograms() override;
+	int													getNumPrograms() override { return 1; }
 
-	int													getCurrentProgram() override;
+	int													getCurrentProgram() override { return 0; }
 
-	void												setCurrentProgram(int index) override;
+	void												setCurrentProgram(int index) override {}
 
-	const juce::String									getProgramName(int index) override;
+	const juce::String									getProgramName(int index) override { return {}; }
 
-	void												changeProgramName(int index, const juce::String &newName) override;
+	void												changeProgramName(int index, const juce::String &newName) override {}
 
-	void												getStateInformation(juce::MemoryBlock &destData) override;
+	void												getStateInformation(juce::MemoryBlock &destData) override {};
 
-	void												setStateInformation(const void *data, int sizeInBytes) override;
+	void												setStateInformation(const void *data, int sizeInBytes) override {}
 
 
 private:
@@ -81,6 +81,7 @@ private:
 
 	void							   setInput(float value);
 
+
 	Distortion<float>				   mDistortionModule;
 
 	Delay<float>					   mDelayModule;
@@ -91,7 +92,7 @@ private:
 
 	juce::SmoothedValue<float>		   mOutput;
 
-	int								   mNumInputChannels = 0;
+	int								   mNumInputChannels{0};
 
 	juce::AudioProcessorValueTreeState mValueTreeState;
 

@@ -21,6 +21,7 @@ class Delay
 {
 public:
 	Delay();
+	~Delay() = default;
 
 	void	  prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS);
 
@@ -40,16 +41,15 @@ private:
 
 	std::vector<juce::SmoothedValue<float>> mChannelDelayTimes; // Using different delay times for each channel
 
-	int										mCircularBufferLength = 0;
+	int										mCircularBufferLength{0};
 
 	std::vector<int>						mWritePositions;
 
-	double									mSampleRate	  = 48000;
-	int										mNumChannels  = 0;
-	int										mMaxBlockSize = 0;
+	double									mSampleRate{48000};
+	int										mNumChannels{0};
+	int										mMaxBlockSize{0};
 
-	DelayType								mDelayType;
-
+	DelayType								mDelayType{DelayType::SingleTap};
 
 	CircularBuffer<SampleType>				mDelayBuffer;
 };

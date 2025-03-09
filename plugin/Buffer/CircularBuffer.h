@@ -30,6 +30,8 @@ private:
 	juce::AudioBuffer<SampleType> mCircularBuffer;
 
 	int							  mNumChannels{0};			  // Set in prepare()
+
 	int							  mWritePosition{0};
+
 	int							  mSizeOfBufferInSeconds = 2; // number of seconds the buffer will be in size of
 };

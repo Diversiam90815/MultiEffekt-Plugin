@@ -35,10 +35,11 @@ public:
 
 	void processStereoPanner(float leftPan, float rightPan, float leftLfoFreq, float rightLfoFreq, float leftLfoDepth, float rightLfoDepth);
 
-private:
-	PannerType				 mPannerMode;
 
-	int						 mNumInputChannels = 0;
+private:
+	PannerType				 mPannerMode{PannerType::Mono};
+
+	int						 mNumInputChannels{0};
 
 	MonoPanner<SampleType>	 mMonoPanner;
 

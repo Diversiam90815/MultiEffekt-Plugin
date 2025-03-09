@@ -209,7 +209,6 @@ SampleType Distortion<SampleType>::processSaturation(SampleType inputSample)
 }
 
 
-
 // Declare Distortion Template Classes that may be used
 template class Distortion<float>;
 template class Distortion<double>;

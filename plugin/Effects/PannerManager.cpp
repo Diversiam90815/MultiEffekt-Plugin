@@ -85,7 +85,6 @@ void PannerManager<SampleType>::processStereoPanner(float leftPan, float rightPa
 }
 
 
-
 // Explicit template instantiations
 template class PannerManager<float>;
 template class PannerManager<double>;
