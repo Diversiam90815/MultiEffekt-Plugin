@@ -302,6 +302,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParam
 
 void PluginProcessor::parameterChanged(const juce::String &parameterID, float newValue)
 {
+	juce::ignoreUnused(parameterID, newValue);
 	updateParameters();
 }
 

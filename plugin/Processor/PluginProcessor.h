@@ -41,7 +41,7 @@ public:
 
 	bool												hasEditor() const override { return true; }
 
-	const juce::String									getName() const override {}
+	const juce::String									getName() const override { return ""; }
 
 	bool												acceptsMidi() const override { return false; }
 
@@ -55,15 +55,19 @@ public:
 
 	int													getCurrentProgram() override { return 0; }
 
-	void												setCurrentProgram(int index) override {}
+	void												setCurrentProgram(int index) override { juce::ignoreUnused(index); }
 
-	const juce::String									getProgramName(int index) override { return {}; }
+	const juce::String									getProgramName(int index) override
+	{
+		juce::ignoreUnused(index);
+		return {};
+	}
 
-	void												changeProgramName(int index, const juce::String &newName) override {}
+	void changeProgramName(int index, const juce::String &newName) override { juce::ignoreUnused(index, newName); }
 
-	void												getStateInformation(juce::MemoryBlock &destData) override {};
+	void getStateInformation(juce::MemoryBlock &destData) override { juce::ignoreUnused(destData); };
 
-	void												setStateInformation(const void *data, int sizeInBytes) override {}
+	void setStateInformation(const void *data, int sizeInBytes) override { juce::ignoreUnused(data, sizeInBytes); }
 
 
 private:
