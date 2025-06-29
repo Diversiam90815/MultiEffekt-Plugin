@@ -70,6 +70,10 @@ set(Effect_Delay_Files
         ${EFFECTS_DIR}/Delay/Delay.h              ${EFFECTS_DIR}/Delay/Delay.cpp
 )
 
+set(Effect_EQ_Files 
+        ${EFFECTS_DIR}/ParametricEQ/ParametricEQ.h              ${EFFECTS_DIR}/ParametricEQ/ParametricEQ.cpp
+)
+
 set(Effect_Panner_Files
         ${EFFECTS_DIR}/Panner/PannerBase.h
         ${EFFECTS_DIR}/Panner/PannerManager.h      ${EFFECTS_DIR}/Panner/PannerManager.cpp
@@ -96,6 +100,7 @@ set(ALL_FILES
     ${Effect_Distortion_Files}
     ${Effect_Delay_Files}
     ${Effect_Panner_Files}
+    ${Effect_EQ_Files}
     ${UI_Files}
     ${Buffer_Files}
     ${Misc_Files}

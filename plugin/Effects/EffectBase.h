@@ -19,7 +19,8 @@ enum class EffectType
 	None	   = 0,
 	Distortion = 1,
 	Delay	   = 2,
-	Panner	   = 3
+	Panner	   = 3,
+	EQ		   = 4
 };
 
 
