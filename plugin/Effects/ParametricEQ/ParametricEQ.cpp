@@ -197,6 +197,48 @@ EQBandType ParametricEQ<SampleType>::getBandType(int bandIndex) const
 template <typename SampleType>
 void ParametricEQ<SampleType>::updateBandCoefficients(int bandIndex)
 {
+	if (bandIndex < 0 || bandIndex >= getNumBands())
+		return;
+
+	auto												  &band		  = mBands[bandIndex];
+	const auto											   freq		  = band.frequency.getNextValue();
+	const auto											   gain		  = band.gain.getNextValue();
+	const auto											   q		  = band.q.getNextValue();
+	const auto											   type		  = band.type.load();
+
+	const auto											   sampleRate = this->getSampleRate();
+
+	typename juce::dsp::IIR::Coefficients<SampleType>::Ptr coefficients;
+
+	switch (type)
+	{
+	case EQBandType::LowShelf:
+	{
+		coefficients = juce::dsp::IIR::Coefficients<SampleType>::makeLowShelf(sampleRate, freq, q, juce::Decibels::decibelsToGain(gain));
+		break;
+	}
+	case EQBandType::HighShelf:
+	{
+		coefficients = juce::dsp::IIR::Coefficients<SampleType>::makeHighShelf(sampleRate, freq, q, juce::Decibels::decibelsToGain(gain));
+		break;
+	}
+	case EQBandType::Peaking:
+	{
+		coefficients = juce::dsp::IIR::Coefficients<SampleType>::makePeakFilter(sampleRate, freq, q, juce::Decibels::decibelsToGain(gain));
+		break;
+	}
+	default:
+	{
+		coefficients = juce::dsp::IIR::Coefficients<SampleType>::makePeakFilter(mSampleRate, freq, q, juce::Decibels::decibelsToGain(gain));
+		break;
+	}
+	}
+
+	if (coefficients != nullptr)
+	{
+		band.filter.coefficients = coefficients;
+		band.lastCoefficients	 = coefficients;
+	}
 }
 
 
