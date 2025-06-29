@@ -75,11 +75,27 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 
 	mDistortionModule.prepare(spec);
 	mDelayModule.prepare(spec, 2000);
-
-	mPanner.setPannerMode(mNumInputChannels);
 	mPanner.prepare(spec);
 
 	updateParameters();
+}
+
+
+void PluginProcessor::updateParameters()
+{
+	updateGainParameter();
+	updateDelayParameter();
+	updateDistortionParameter();
+	updatePannerParameter();
+}
+
+
+void PluginProcessor::setParameter(const std::string &name, float value)
+{
+	if (name == paramInput)
+		setInput(value);
+	else if (name == paramOutput)
+		setOutput(value);
 }
 
 
@@ -132,45 +148,35 @@ juce::AudioProcessorEditor *PluginProcessor::createEditor()
 }
 
 
-void PluginProcessor::updateParameters()
+template <typename EffectType, size_t N>
+void PluginProcessor::updateEffectParameters(EffectType &effect, const std::array<const char *, N> &parameters)
 {
-	updateGainParameter();
-
-	updateDistortionParameter();
-
-	updateDelayParameter();
-
-	updatePannerParameter();
+	for (const auto &paramId : parameters)
+	{
+		if (auto *rawValue = mValueTreeState.getRawParameterValue(paramId))
+		{
+			effect.setParameter(paramId, rawValue->load());
+		}
+	}
 }
 
 
 void PluginProcessor::updateGainParameter()
 {
-	setInput(mValueTreeState.getRawParameterValue(paramInput)->load());
-	setOutput(mValueTreeState.getRawParameterValue(paramOutput)->load());
+	updateEffectParameters(*this, gainParameters);
 }
 
 
 void PluginProcessor::updateDelayParameter()
 {
-	mDelayModule.setMix(mValueTreeState.getRawParameterValue(paramMixDelay)->load());
-	mDelayModule.setChannelDelayTime(0, mValueTreeState.getRawParameterValue(paramDelayTimeLeft)->load());
-	mDelayModule.setChannelDelayTime(1, mValueTreeState.getRawParameterValue(paramDelayTimeRight)->load());
-	mDelayModule.setFeedback(mValueTreeState.getRawParameterValue(paramDelayFeedback)->load());
+	updateEffectParameters(mDelayModule, delayParameters);
 
+	// Handle special type conversion for delay type
 	auto delayMode = static_cast<int>(mValueTreeState.getRawParameterValue(paramDelayModel)->load());
 	switch (delayMode)
 	{
-	case 0:
-	{
-		mDelayModule.setDelayType(DelayType::SingleTap);
-		break;
-	}
-	case 1:
-	{
-		mDelayModule.setDelayType(DelayType::PingPong);
-		break;
-	}
+	case 0: mDelayModule.setDelayType(DelayType::SingleTap); break;
+	case 1: mDelayModule.setDelayType(DelayType::PingPong); break;
 	default: break;
 	}
 }
@@ -207,18 +213,16 @@ void PluginProcessor::updateDistortionParameter()
 
 void PluginProcessor::updatePannerParameter()
 {
-	mPanner.enableLFO(mValueTreeState.getRawParameterValue(paramPannerLfoEnabled)->load());
+	// Always set common parameters
+	updateEffectParameters(mPanner, pannerCommonParameters);
 
 	if (mNumInputChannels == 1) // Mono
 	{
-		mPanner.processMonoPanner(mValueTreeState.getRawParameterValue(paramMonoPanValue)->load(), mValueTreeState.getRawParameterValue(paramMonoLfoFreq)->load(),
-								  mValueTreeState.getRawParameterValue(paramMonoLfoDepth)->load());
+		updateEffectParameters(mPanner, pannerMonoParameters);
 	}
 	else // Stereo
 	{
-		mPanner.processStereoPanner(mValueTreeState.getRawParameterValue(paramStereoLeftPanValue)->load(), mValueTreeState.getRawParameterValue(paramStereoRightPanValue)->load(),
-									mValueTreeState.getRawParameterValue(paramStereoLeftLfoFreq)->load(), mValueTreeState.getRawParameterValue(paramStereoRightLfoFreq)->load(),
-									mValueTreeState.getRawParameterValue(paramStereoLeftLfoDepth)->load(), mValueTreeState.getRawParameterValue(paramStereoRightLfoDepth)->load());
+		updateEffectParameters(mPanner, pannerStereoParameters);
 	}
 }
 

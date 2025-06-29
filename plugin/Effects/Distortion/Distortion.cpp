@@ -130,13 +130,13 @@ SampleType Distortion<SampleType>::processSample(SampleType input) noexcept
 template <typename SampleType>
 void Distortion<SampleType>::setParameter(const std::string &name, float value)
 {
-	if (name == "drive")
+	if (name == paramDistortionDrive)
 		setDrive(value);
-	else if (name == "mix")
+	else if (name == paramMixDistortion)
 		setMix(value);
-	else if (name == "output")
+	else if (name == paramOutput)
 		setOutput(value);
-	else if (name == "type")
+	else if (name == paramDistortionType)
 		setCurrentDistortionType(static_cast<DistortionType>(static_cast<int>(value)));
 }
 
@@ -144,13 +144,13 @@ void Distortion<SampleType>::setParameter(const std::string &name, float value)
 template <typename SampleType>
 float Distortion<SampleType>::getParameter(const std::string &name) const
 {
-	if (name == "drive")
+	if (name == paramDistortionDrive)
 		return mDrive.getCurrentValue();
-	else if (name == "mix")
+	else if (name == paramMixDistortion)
 		return mMix.getCurrentValue();
-	else if (name == "output")
+	else if (name == paramOutput)
 		return mOutput.getCurrentValue();
-	else if (name == "type")
+	else if (name == paramDistortionType)
 		return static_cast<float>(static_cast<int>(getCurrentDistortionType()));
 
 	return 0.0f;

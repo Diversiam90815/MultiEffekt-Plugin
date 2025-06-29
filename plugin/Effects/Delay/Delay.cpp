@@ -147,35 +147,28 @@ void Delay<SampleType>::reset()
 template <typename SampleType>
 void Delay<SampleType>::setParameter(const std::string &name, float value)
 {
-	if (name == "mix")
+	if (name == paramMixDelay)
 		setMix(value);
-	else if (name == "feedback")
+	else if (name == paramDelayFeedback)
 		setFeedback(value);
-	else if (name == "delayTimeLeft" && mChannelDelayTimes.size() > 0)
+	else if (name == paramDelayTimeLeft && mChannelDelayTimes.size() > 0)
 		setChannelDelayTime(0, value);
-	else if (name == "delayTimeRight" && mChannelDelayTimes.size() > 1)
+	else if (name == paramDelayTimeRight && mChannelDelayTimes.size() > 1)
 		setChannelDelayTime(1, value);
-	else if (name == "maxDelayInMS")
-	{
-		mMaxDelayInMS = value;
-		// TODO : reprepare delay / buffer
-	}
 }
 
 
 template <typename SampleType>
 float Delay<SampleType>::getParameter(const std::string &name) const
 {
-	if (name == "mix")
+	if (name == paramMixDelay)
 		return mMix.getCurrentValue();
-	else if (name == "feedback")
+	else if (name == paramDelayFeedback)
 		return mFeedback.getCurrentValue();
-	else if (name == "delayTimeLeft" && mChannelDelayTimes.size() > 0)
+	else if (name == paramDelayTimeLeft && mChannelDelayTimes.size() > 0)
 		return mChannelDelayTimes[0].getCurrentValue();
-	else if (name == "delayTimeRight" && mChannelDelayTimes.size() > 1)
+	else if (name == paramDelayTimeRight && mChannelDelayTimes.size() > 1)
 		return mChannelDelayTimes[1].getCurrentValue();
-	else if (name == "maxDelayInMS")
-		return mMaxDelayInMS;
 
 	return 0.0f;
 }

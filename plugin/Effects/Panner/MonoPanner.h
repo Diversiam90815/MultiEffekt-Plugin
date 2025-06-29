@@ -20,16 +20,17 @@ public:
 	~MonoPanner() = default;
 
 	void prepare(const juce::dsp::ProcessSpec &spec) override;
-
 	void reset() override;
-
 	void process(juce::AudioBuffer<SampleType> &buffer) override;
 
 	void setPan(float newPan);
-
 	void setLfoRate(float newFrequency);
-
 	void setLfoDepth(float newDepth);
+
+	// Getters for PannerManager parameter interface
+	float getPan() const { return mPan.getCurrentValue(); }
+	float getLfoRate() const { return mLfoFrequency.getCurrentValue(); }
+	float getLfoDepth() const { return mLfoDepth.getCurrentValue(); }
 
 private:
 	juce::SmoothedValue<float>		  mPan;

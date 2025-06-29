@@ -71,7 +71,13 @@ public:
 
 
 private:
-	void							   updateParameters();
+
+	void updateParameters();
+
+	void setParameter(const std::string &name, float value);
+
+	template <typename EffectType, size_t N>
+	void							   updateEffectParameters(EffectType &effect, const std::array<const char *, N> &parameters);
 
 	void							   updateGainParameter();
 
