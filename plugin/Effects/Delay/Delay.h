@@ -9,31 +9,36 @@
 
 #pragma once
 
-#include <juce_dsp/juce_dsp.h>
-#include <juce_audio_processors/juce_audio_processors.h>
-
+#include "EffectBase.h"
 #include "CircularBuffer.h"
 #include "Parameters.h"
 
 
 template <typename SampleType>
-class Delay
+class Delay : public EffectBase<SampleType>
 {
 public:
 	Delay();
 	~Delay() = default;
 
-	void	  prepare(juce::dsp::ProcessSpec &spec, float maxDelayInMS);
+	void	   prepare(const juce::dsp::ProcessSpec &spec) override;
+	void	   prepare(const juce::dsp::ProcessSpec &spec, float maxDelayInMS);
+	void	   process(juce::AudioBuffer<SampleType> &buffer) override;
+	void	   reset() override;
+	EffectType getEffectType() const override { return EffectType::Delay; }
 
-	void	  process(juce::AudioBuffer<SampleType> &buffer);
+	void	   setParameter(const std::string &name, float value) override;
+	float	   getParameter(const std::string &name) const override;
 
-	void	  setMix(float newValue);
-	void	  setFeedback(float newValue);
+	void	   prepareDelayBuffer();
 
-	DelayType getDelayType() const;
-	void	  setDelayType(DelayType type);
+	void	   setMix(float newValue);
+	void	   setFeedback(float newValue);
 
-	void	  setChannelDelayTime(int channel, float timeInMS);
+	DelayType  getDelayType() const;
+	void	   setDelayType(DelayType type);
+
+	void	   setChannelDelayTime(int channel, float timeInMS);
 
 private:
 	juce::SmoothedValue<float>				mFeedback;
@@ -45,9 +50,7 @@ private:
 
 	std::vector<int>						mWritePositions;
 
-	double									mSampleRate{48000};
-	int										mNumChannels{0};
-	int										mMaxBlockSize{0};
+	float									mMaxDelayInMS{0.0f};
 
 	DelayType								mDelayType{DelayType::SingleTap};
 

@@ -40,7 +40,7 @@ public:
 
 	// Parameter interface for generic parameter handling
 	virtual void	   setParameter(const std::string &name, float value) {}
-	virtual float	   getParameter(const std::string &name) { return 0.0f };
+	virtual float	   getParameter(const std::string &name) const { return 0.0f; }
 
 	// Bypass functionality
 	virtual void	   setBypassed(bool shouldBeBypassed) { mBypassed = shouldBeBypassed; }

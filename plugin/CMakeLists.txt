@@ -179,6 +179,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
         /sdl
         /MP
         /wd4146  # Suppress warning C4146
+        /wd4100  # Suppress warning C4100 (unreferenced parameter)
         ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
         ${DEFAULT_CXX_EXCEPTION_HANDLING}
 )
