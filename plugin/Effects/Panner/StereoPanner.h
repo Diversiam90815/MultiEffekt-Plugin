@@ -20,7 +20,6 @@ public:
 
 	void prepare(const juce::dsp::ProcessSpec &spec) override;
 	void reset() override;
-
 	void process(juce::AudioBuffer<SampleType> &buffer) override;
 
 	// --- Set parameters for left channel
@@ -33,6 +32,14 @@ public:
 	void setRightChannelLfoRate(float newFrequency);
 	void setRightChannelLfoDepth(float newDepth);
 
+	// Getters for PannerManager parameter interface
+	float getLeftChannelPan() const { return mLeftChannelPan.getCurrentValue(); }
+	float getLeftChannelLfoRate() const { return mLeftChannelLfoFrequency.getCurrentValue(); }
+	float getLeftChannelLfoDepth() const { return mLeftChannelLfoDepth.getCurrentValue(); }
+
+	float getRightChannelPan() const { return mRightChannelPan.getCurrentValue(); }
+	float getRightChannelLfoRate() const { return mRightChannelLfoFrequency.getCurrentValue(); }
+	float getRightChannelLfoDepth() const { return mRightChannelLfoDepth.getCurrentValue(); }
 
 private:
 	juce::SmoothedValue<float>		  mLeftChannelPan;

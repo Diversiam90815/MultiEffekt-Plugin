@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(MultiEffectPluginProject LANGUAGES CXX VERSION ${PLUGIN_VERSION})
+project(MultiEffectPluginProject)
 
 set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR})
 
