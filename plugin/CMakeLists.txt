@@ -54,12 +54,12 @@ configure_file(${CMAKE_SOURCE_DIR}/Project.h.in ${CMAKE_BINARY_DIR}/include/Proj
 #   Files
 #-----------------------------------------------------------------------------------------
 
-set(Processor_Files 
-        ${PROCESSOR_DIR}/PluginProcessor.h  ${PROCESSOR_DIR}/PluginProcessor.cpp
+set(Effect_Base_Files 
+        ${EFFECTS_DIR}/EffectBase.h
 )
 
-set(Effect_Base_Files 
-        ${EFFECTS_DIR}/EffectBase.h         ${EFFECTS_DIR}/EffectBase.cpp
+set(Processor_Files 
+        ${PROCESSOR_DIR}/PluginProcessor.h  ${PROCESSOR_DIR}/PluginProcessor.cpp
 )
 
 set(Effect_Distortion_Files 
