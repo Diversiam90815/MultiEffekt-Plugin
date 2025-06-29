@@ -65,7 +65,7 @@ private:
 		std::atomic<bool>									   enabled{true};
 		std::atomic<EQBandType>								   type{EQBandType::Peaking};
 		typename juce::dsp::IIR::Coefficients<SampleType>::Ptr lastCoefficients;
-		bool												   needsUpate{true};
+		bool												   needsUpdate{true};
 	};
 
 	void									   updateBandCoefficients(int bandIndex);

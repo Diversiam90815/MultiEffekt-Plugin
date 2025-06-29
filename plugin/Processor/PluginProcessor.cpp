@@ -35,6 +35,22 @@ PluginProcessor::PluginProcessor()
 	mValueTreeState.addParameterListener(paramStereoLeftLfoDepth, this);
 	mValueTreeState.addParameterListener(paramStereoRightLfoDepth, this);
 	mValueTreeState.addParameterListener(paramPannerLfoEnabled, this);
+	mValueTreeState.addParameterListener(paramEqBand0Frequency, this);
+	mValueTreeState.addParameterListener(paramEqBand0Gain, this);
+	mValueTreeState.addParameterListener(paramEqBand0Q, this);
+	mValueTreeState.addParameterListener(paramEqBand0Enabled, this);
+	mValueTreeState.addParameterListener(paramEqBand1Frequency, this);
+	mValueTreeState.addParameterListener(paramEqBand1Gain, this);
+	mValueTreeState.addParameterListener(paramEqBand1Q, this);
+	mValueTreeState.addParameterListener(paramEqBand1Enabled, this);
+	mValueTreeState.addParameterListener(paramEqBand2Frequency, this);
+	mValueTreeState.addParameterListener(paramEqBand2Gain, this);
+	mValueTreeState.addParameterListener(paramEqBand2Q, this);
+	mValueTreeState.addParameterListener(paramEqBand2Enabled, this);
+	mValueTreeState.addParameterListener(paramEqBand3Frequency, this);
+	mValueTreeState.addParameterListener(paramEqBand3Gain, this);
+	mValueTreeState.addParameterListener(paramEqBand3Q, this);
+	mValueTreeState.addParameterListener(paramEqBand3Enabled, this);
 }
 
 
@@ -60,6 +76,22 @@ PluginProcessor::~PluginProcessor()
 	mValueTreeState.removeParameterListener(paramStereoLeftLfoDepth, this);
 	mValueTreeState.removeParameterListener(paramStereoRightLfoDepth, this);
 	mValueTreeState.removeParameterListener(paramPannerLfoEnabled, this);
+	mValueTreeState.removeParameterListener(paramEqBand0Frequency, this);
+	mValueTreeState.removeParameterListener(paramEqBand0Gain, this);
+	mValueTreeState.removeParameterListener(paramEqBand0Q, this);
+	mValueTreeState.removeParameterListener(paramEqBand0Enabled, this);
+	mValueTreeState.removeParameterListener(paramEqBand1Frequency, this);
+	mValueTreeState.removeParameterListener(paramEqBand1Gain, this);
+	mValueTreeState.removeParameterListener(paramEqBand1Q, this);
+	mValueTreeState.removeParameterListener(paramEqBand1Enabled, this);
+	mValueTreeState.removeParameterListener(paramEqBand2Frequency, this);
+	mValueTreeState.removeParameterListener(paramEqBand2Gain, this);
+	mValueTreeState.removeParameterListener(paramEqBand2Q, this);
+	mValueTreeState.removeParameterListener(paramEqBand2Enabled, this);
+	mValueTreeState.removeParameterListener(paramEqBand3Frequency, this);
+	mValueTreeState.removeParameterListener(paramEqBand3Gain, this);
+	mValueTreeState.removeParameterListener(paramEqBand3Q, this);
+	mValueTreeState.removeParameterListener(paramEqBand3Enabled, this);
 }
 
 
@@ -75,7 +107,8 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 
 	mDistortionModule.prepare(spec);
 	mDelayModule.prepare(spec, 2000);
-	mPanner.prepare(spec);
+	mPannerModule.prepare(spec);
+	mEQModule.prepare(spec);
 
 	updateParameters();
 }
@@ -83,10 +116,11 @@ void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 
 void PluginProcessor::updateParameters()
 {
-	updateGainParameter();
-	updateDelayParameter();
-	updateDistortionParameter();
-	updatePannerParameter();
+	updateGainParameters();
+	updateDelayParameters();
+	updateDistortionParameters();
+	updatePannerParameters();
+	updateEQParameters();
 }
 
 
@@ -131,7 +165,7 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiB
 
 	mDelayModule.process(buffer);
 
-	mPanner.process(buffer);
+	mPannerModule.process(buffer);
 
 	// Apply output gain
 	float outputLevel = mOutput.getNextValue();
@@ -161,13 +195,13 @@ void PluginProcessor::updateEffectParameters(EffectType &effect, const std::arra
 }
 
 
-void PluginProcessor::updateGainParameter()
+void PluginProcessor::updateGainParameters()
 {
 	updateEffectParameters(*this, gainParameters);
 }
 
 
-void PluginProcessor::updateDelayParameter()
+void PluginProcessor::updateDelayParameters()
 {
 	updateEffectParameters(mDelayModule, delayParameters);
 
@@ -182,7 +216,7 @@ void PluginProcessor::updateDelayParameter()
 }
 
 
-void PluginProcessor::updateDistortionParameter()
+void PluginProcessor::updateDistortionParameters()
 {
 	mDistortionModule.setDrive(mValueTreeState.getRawParameterValue(paramDistortionDrive)->load());
 	mDistortionModule.setOutput(mValueTreeState.getRawParameterValue(paramOutput)->load());
@@ -211,19 +245,25 @@ void PluginProcessor::updateDistortionParameter()
 }
 
 
-void PluginProcessor::updatePannerParameter()
+void PluginProcessor::updatePannerParameters()
 {
 	// Always set common parameters
-	updateEffectParameters(mPanner, pannerCommonParameters);
+	updateEffectParameters(mPannerModule, pannerCommonParameters);
 
 	if (mNumInputChannels == 1) // Mono
 	{
-		updateEffectParameters(mPanner, pannerMonoParameters);
+		updateEffectParameters(mPannerModule, pannerMonoParameters);
 	}
 	else // Stereo
 	{
-		updateEffectParameters(mPanner, pannerStereoParameters);
+		updateEffectParameters(mPannerModule, pannerStereoParameters);
 	}
+}
+
+
+void PluginProcessor::updateEQParameters()
+{
+	updateEffectParameters(mEQModule, eqParameters);
 }
 
 
@@ -277,6 +317,32 @@ juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParam
 		std::make_unique<juce::AudioParameterFloat>(paramStereoRightLfoDepth, stereoRightLfoDepthName, stereoRightLfoDepthMin, stereoRightLfoDepthMax, stereoRightLfoDepthDefault);
 	auto pannerLfoEnabled = std::make_unique<juce::AudioParameterBool>(paramPannerLfoEnabled, pannerLfoEnabledName, pannerLfoEnabledDefault);
 
+	// EQ Parameters
+	auto eqBand0Frequency =
+		std::make_unique<juce::AudioParameterFloat>(paramEqBand0Frequency, eqBand0FrequencyName, eqBand0FrequencyMin, eqBand0FrequencyMax, eqBand0FrequencyDefault);
+	auto eqBand0Gain	= std::make_unique<juce::AudioParameterFloat>(paramEqBand0Gain, eqBand0GainName, eqBandGainMin, eqBandGainMax, eqBandGainDefault);
+	auto eqBand0Q		= std::make_unique<juce::AudioParameterFloat>(paramEqBand0Q, eqBand0QName, eqBandQMin, eqBandQMax, eqBandQDefault);
+	auto eqBand0Enabled = std::make_unique<juce::AudioParameterBool>(paramEqBand0Enabled, eqBand0EnabledName, eqBandEnabledDefault);
+
+	auto eqBand1Frequency =
+		std::make_unique<juce::AudioParameterFloat>(paramEqBand1Frequency, eqBand1FrequencyName, eqBand1FrequencyMin, eqBand1FrequencyMax, eqBand1FrequencyDefault);
+	auto eqBand1Gain	= std::make_unique<juce::AudioParameterFloat>(paramEqBand1Gain, eqBand1GainName, eqBandGainMin, eqBandGainMax, eqBandGainDefault);
+	auto eqBand1Q		= std::make_unique<juce::AudioParameterFloat>(paramEqBand1Q, eqBand1QName, eqBandQMin, eqBandQMax, eqBandQDefault);
+	auto eqBand1Enabled = std::make_unique<juce::AudioParameterBool>(paramEqBand1Enabled, eqBand1EnabledName, eqBandEnabledDefault);
+
+	auto eqBand2Frequency =
+		std::make_unique<juce::AudioParameterFloat>(paramEqBand2Frequency, eqBand2FrequencyName, eqBand2FrequencyMin, eqBand2FrequencyMax, eqBand2FrequencyDefault);
+	auto eqBand2Gain	= std::make_unique<juce::AudioParameterFloat>(paramEqBand2Gain, eqBand2GainName, eqBandGainMin, eqBandGainMax, eqBandGainDefault);
+	auto eqBand2Q		= std::make_unique<juce::AudioParameterFloat>(paramEqBand2Q, eqBand2QName, eqBandQMin, eqBandQMax, eqBandQDefault);
+	auto eqBand2Enabled = std::make_unique<juce::AudioParameterBool>(paramEqBand2Enabled, eqBand2EnabledName, eqBandEnabledDefault);
+
+	auto eqBand3Frequency =
+		std::make_unique<juce::AudioParameterFloat>(paramEqBand3Frequency, eqBand3FrequencyName, eqBand3FrequencyMin, eqBand3FrequencyMax, eqBand3FrequencyDefault);
+	auto eqBand3Gain	= std::make_unique<juce::AudioParameterFloat>(paramEqBand3Gain, eqBand3GainName, eqBandGainMin, eqBandGainMax, eqBandGainDefault);
+	auto eqBand3Q		= std::make_unique<juce::AudioParameterFloat>(paramEqBand3Q, eqBand3QName, eqBandQMin, eqBandQMax, eqBandQDefault);
+	auto eqBand3Enabled = std::make_unique<juce::AudioParameterBool>(paramEqBand3Enabled, eqBand3EnabledName, eqBandEnabledDefault);
+
+
 	// Add all parameters to the parameter list
 	params.push_back(std::move(input));
 	params.push_back(std::move(output));
@@ -298,6 +364,22 @@ juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParam
 	params.push_back(std::move(stereoLeftLfoDepth));
 	params.push_back(std::move(stereoRightLfoDepth));
 	params.push_back(std::move(pannerLfoEnabled));
+	params.push_back(std::move(eqBand0Frequency));
+	params.push_back(std::move(eqBand0Gain));
+	params.push_back(std::move(eqBand0Q));
+	params.push_back(std::move(eqBand0Enabled));
+	params.push_back(std::move(eqBand1Frequency));
+	params.push_back(std::move(eqBand1Gain));
+	params.push_back(std::move(eqBand1Q));
+	params.push_back(std::move(eqBand1Enabled));
+	params.push_back(std::move(eqBand2Frequency));
+	params.push_back(std::move(eqBand2Gain));
+	params.push_back(std::move(eqBand2Q));
+	params.push_back(std::move(eqBand2Enabled));
+	params.push_back(std::move(eqBand3Frequency));
+	params.push_back(std::move(eqBand3Gain));
+	params.push_back(std::move(eqBand3Q));
+	params.push_back(std::move(eqBand3Enabled));
 
 	return {params.begin(), params.end()};
 }

@@ -16,6 +16,7 @@
 #include "Distortion/Distortion.h"
 #include "Delay/Delay.h"
 #include "Panner/PannerManager.h"
+#include "ParametricEQ/ParametricEQ.h"
 
 
 class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
@@ -71,7 +72,6 @@ public:
 
 
 private:
-
 	void updateParameters();
 
 	void setParameter(const std::string &name, float value);
@@ -79,13 +79,11 @@ private:
 	template <typename EffectType, size_t N>
 	void							   updateEffectParameters(EffectType &effect, const std::array<const char *, N> &parameters);
 
-	void							   updateGainParameter();
-
-	void							   updateDelayParameter();
-
-	void							   updateDistortionParameter();
-
-	void							   updatePannerParameter();
+	void							   updateGainParameters();
+	void							   updateDelayParameters();
+	void							   updateDistortionParameters();
+	void							   updatePannerParameters();
+	void							   updateEQParameters();
 
 	void							   setOutput(float value);
 
@@ -96,7 +94,9 @@ private:
 
 	Delay<float>					   mDelayModule;
 
-	PannerManager<float>			   mPanner;
+	PannerManager<float>			   mPannerModule;
+
+	ParametricEQ<float>				   mEQModule;
 
 	juce::SmoothedValue<float>		   mInput;
 

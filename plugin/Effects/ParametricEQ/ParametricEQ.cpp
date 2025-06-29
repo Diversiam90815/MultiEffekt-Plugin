@@ -95,7 +95,7 @@ void ParametricEQ<SampleType>::setParameter(const std::string &name, float value
 
 			try
 			{
-				const int bandIndex = std::stoi(bandIndex);
+				const int bandIndex = std::stoi(bandIndexStr);
 				if (bandIndex >= 0 && bandIndex < getNumBands())
 				{
 					if (paramName == "frequency")
@@ -314,3 +314,7 @@ void ParametricEQ<SampleType>::updateAllBands()
 		updateBandCoefficients(i);
 	}
 }
+
+// Explicit template instantiations
+template class ParametricEQ<float>;
+template class ParametricEQ<double>;
