@@ -12,24 +12,70 @@
 template <typename SampleType>
 ParametricEQ<SampleType>::ParametricEQ()
 {
+	// Initialize default values for each band
+	for (int i = 0; i < getNumBands(); ++i)
+	{
+		mBands[i].frequency.setCurrentAndTargetValue(defaultFrequencies[i]);
+		mBands[i].gain.setCurrentAndTargetValue(0.0f);
+		mBands[i].q.setCurrentAndTargetValue(0.707f);
+		mBands[i].type	  = defaultTypes[i];
+		mBands[i].enabled = true;
+	}
 }
 
 
 template <typename SampleType>
 void ParametricEQ<SampleType>::prepare(const juce::dsp::ProcessSpec &spec)
 {
+	this->setSampleRate(spec.sampleRate);
+	this->setNumChannels(spec.numChannels);
+	this->setMaxBlockSize(spec.maximumBlockSize);
+
+	for (auto &band : mBands)
+	{
+		band.filter.prepare(spec);
+		band.filter.reset();
+
+		// Set smoothing parameters (with a 10ms rampt time)
+		const auto rampTime = 0.01;
+		band.frequency.reset(spec.sampleRate, rampTime);
+		band.gain.reset(spec.sampleRate, rampTime);
+		band.q.reset(spec.sampleRate, rampTime);
+
+		band.needsUpdate = true;
+	}
+
+	updateAllBands();
 }
 
 
 template <typename SampleType>
 void ParametricEQ<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 {
+	if (this->isBypassed())
+	{
+		this->processBypassed(buffer);
+		return;
+	}
+
+	// Update coefficients if needed
+	if (mNeedsUpdate)
+	{
+		updateAllBands();
+		mNeedsUpdate = false;
+	}
+
+	// TODO: Add processing code
 }
 
 
 template <typename SampleType>
 void ParametricEQ<SampleType>::reset()
 {
+	for (auto &band : mBands)
+	{
+		band.filter.reset();
+	}
 }
 
 
@@ -49,36 +95,65 @@ float ParametricEQ<SampleType>::getParameter(const std::string &name) const
 template <typename SampleType>
 void ParametricEQ<SampleType>::setBandFrequency(int bandIndex, float frequency)
 {
+	if (bandIndex >= 0 && bandIndex < getNumBands())
+	{
+		// Clamp frequency to valid range (20Hz - Nyquist)
+		const auto clampedFreq = juce::jlimit(20.0f, static_cast<float>(mSampleRate * 0.49), frequency);
+		mBands[bandIndex].frequency.setTargetValue(clampedFreq);
+	}
 }
 
 
 template <typename SampleType>
 void ParametricEQ<SampleType>::setBandGain(int bandIndex, float gainDB)
 {
+	if (bandIndex >= 0 && bandIndex < getNumBands())
+	{
+		// Clamp gain to reasonable range
+		const auto clampedGain = juce::jlimit(-24.0f, 24.0f, gainDB);
+		mBands[bandIndex].gain.setTargetValue(clampedGain);
+	}
 }
 
 
 template <typename SampleType>
 void ParametricEQ<SampleType>::setBandQ(int bandIndex, float q)
 {
+	if (bandIndex >= 0 && bandIndex < getNumBands())
+	{
+		// Clamp Q to reasonable range
+		const auto clampedQ = juce::jlimit(0.1f, 20.0f, q);
+		mBands[bandIndex].q.setTargetValue(clampedQ);
+	}
 }
 
 
 template <typename SampleType>
 void ParametricEQ<SampleType>::setBandEnabled(int bandIndex, bool enabled)
 {
+	if (bandIndex >= 0 && bandIndex < getNumBands())
+	{
+		mBands[bandIndex].enabled = enabled;
+	}
 }
 
 
 template <typename SampleType>
 void ParametricEQ<SampleType>::setBandType(int bandIndex, EQBandType type)
 {
+	if (bandIndex >= 0 && bandIndex < getNumBands())
+	{
+		mBands[bandIndex].type		  = type;
+		mBands[bandIndex].needsUpdate = true;
+	}
 }
 
 
 template <typename SampleType>
 float ParametricEQ<SampleType>::getBandFrequency(int bandIndex) const
 {
+	if (bandIndex >= 0 && bandIndex < getNumBands())
+		return mBands[bandIndex].frequency.getCurrentValue();
 	return 0.0f;
 }
 
@@ -86,6 +161,8 @@ float ParametricEQ<SampleType>::getBandFrequency(int bandIndex) const
 template <typename SampleType>
 float ParametricEQ<SampleType>::getBandGain(int bandIndex) const
 {
+	if (bandIndex >= 0 && bandIndex < getNumBands())
+		return mBands[bandIndex].gain.getCurrentValue();
 	return 0.0f;
 }
 
@@ -93,6 +170,8 @@ float ParametricEQ<SampleType>::getBandGain(int bandIndex) const
 template <typename SampleType>
 float ParametricEQ<SampleType>::getBandQ(int bandIndex) const
 {
+	if (bandIndex >= 0 && bandIndex < getNumBands())
+		return mBands[bandIndex].q.getCurrentValue();
 	return 0.0f;
 }
 
@@ -100,6 +179,8 @@ float ParametricEQ<SampleType>::getBandQ(int bandIndex) const
 template <typename SampleType>
 bool ParametricEQ<SampleType>::getBandEnabled(int bandIndex) const
 {
+	if (bandIndex >= 0 && bandIndex < getNumBands())
+		return mBands[bandIndex].enabled.load();
 	return false;
 }
 
@@ -107,7 +188,9 @@ bool ParametricEQ<SampleType>::getBandEnabled(int bandIndex) const
 template <typename SampleType>
 EQBandType ParametricEQ<SampleType>::getBandType(int bandIndex) const
 {
-	return EQBandType();
+	if (bandIndex >= 0 && bandIndex < getNumBands())
+		return mBands[bandIndex].type.load();
+	return EQBandType::Peaking;
 }
 
 
@@ -120,4 +203,8 @@ void ParametricEQ<SampleType>::updateBandCoefficients(int bandIndex)
 template <typename SampleType>
 void ParametricEQ<SampleType>::updateAllBands()
 {
+	for (int i = 0; i < getNumBands(); ++i)
+	{
+		updateBandCoefficients(i);
+	}
 }
