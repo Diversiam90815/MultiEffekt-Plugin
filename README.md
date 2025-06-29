@@ -9,8 +9,8 @@
 - **Distortion**: Multiple distortion type to select from: Saturation, Hard & Soft Clipping.
 - **Delay**: A flexible delay module supporting different delay times for each channel (currently just Single Tapping Delay; PingPong delay planned)
 - **Panner**: Includes a mono and stereo panner, with dynamic LFO modulation for creative stereo imaging.
+- **Equalizer**: A 4-band parametric equalizer
 - **Reverb** (in development)
-- **Equalizer** (in development)
 - **Compressor** (in development)
 
 ## Features
