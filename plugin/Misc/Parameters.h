@@ -145,26 +145,108 @@ constexpr auto			pannerLfoEnabledName	   = "LFO enabled";
 constexpr bool			pannerLfoEnabledDefault	   = false;
 
 
+
+//==============================================
+//				Parametric EQ
+//==============================================
+
+// Band 0 (Low Shelf)
+constexpr auto			paramEqBand0Frequency	   = "band0_frequency";
+constexpr auto			eqBand0FrequencyName	   = "Low Band Frequency";
+constexpr float			eqBand0FrequencyMin		   = 20.0f;
+constexpr float			eqBand0FrequencyMax		   = 500.0f;
+constexpr float			eqBand0FrequencyDefault	   = 100.0f;
+
+constexpr auto			paramEqBand0Gain		   = "band0_gain";
+constexpr auto			eqBand0GainName			   = "Low Band Gain";
+constexpr float			eqBandGainMin			   = -24.0f;
+constexpr float			eqBandGainMax			   = 24.0f;
+constexpr float			eqBandGainDefault		   = 0.0f;
+
+constexpr auto			paramEqBand0Q			   = "band0_q";
+constexpr auto			eqBand0QName			   = "Low Band Q";
+constexpr float			eqBandQMin				   = 0.1f;
+constexpr float			eqBandQMax				   = 20.0f;
+constexpr float			eqBandQDefault			   = 0.707f;
+
+constexpr auto			paramEqBand0Enabled		   = "band0_enabled";
+constexpr auto			eqBand0EnabledName		   = "Low Band Enabled";
+constexpr bool			eqBandEnabledDefault	   = true;
+
+// Band 1 (Low Mid Peaking)
+constexpr auto			paramEqBand1Frequency	   = "band1_frequency";
+constexpr auto			eqBand1FrequencyName	   = "Low Mid Frequency";
+constexpr float			eqBand1FrequencyMin		   = 100.0f;
+constexpr float			eqBand1FrequencyMax		   = 2000.0f;
+constexpr float			eqBand1FrequencyDefault	   = 500.0f;
+
+constexpr auto			paramEqBand1Gain		   = "band1_gain";
+constexpr auto			eqBand1GainName			   = "Low Mid Gain";
+
+constexpr auto			paramEqBand1Q			   = "band1_q";
+constexpr auto			eqBand1QName			   = "Low Mid Q";
+
+constexpr auto			paramEqBand1Enabled		   = "band1_enabled";
+constexpr auto			eqBand1EnabledName		   = "Low Mid Enabled";
+
+// Band 2 (High Mid Peaking)
+constexpr auto			paramEqBand2Frequency	   = "band2_frequency";
+constexpr auto			eqBand2FrequencyName	   = "High Mid Frequency";
+constexpr float			eqBand2FrequencyMin		   = 500.0f;
+constexpr float			eqBand2FrequencyMax		   = 8000.0f;
+constexpr float			eqBand2FrequencyDefault	   = 2000.0f;
+
+constexpr auto			paramEqBand2Gain		   = "band2_gain";
+constexpr auto			eqBand2GainName			   = "High Mid Gain";
+
+constexpr auto			paramEqBand2Q			   = "band2_q";
+constexpr auto			eqBand2QName			   = "High Mid Q";
+
+constexpr auto			paramEqBand2Enabled		   = "band2_enabled";
+constexpr auto			eqBand2EnabledName		   = "High Mid Enabled";
+
+// Band 3 (High Shelf)
+constexpr auto			paramEqBand3Frequency	   = "band3_frequency";
+constexpr auto			eqBand3FrequencyName	   = "High Band Frequency";
+constexpr float			eqBand3FrequencyMin		   = 2000.0f;
+constexpr float			eqBand3FrequencyMax		   = 20000.0f;
+constexpr float			eqBand3FrequencyDefault	   = 8000.0f;
+
+constexpr auto			paramEqBand3Gain		   = "band3_gain";
+constexpr auto			eqBand3GainName			   = "High Band Gain";
+
+constexpr auto			paramEqBand3Q			   = "band3_q";
+constexpr auto			eqBand3QName			   = "High Band Q";
+
+constexpr auto			paramEqBand3Enabled		   = "band3_enabled";
+constexpr auto			eqBand3EnabledName		   = "High Band Enabled";
+
+
 //==============================================
 //				Effect Params
 //==============================================
 
-// Distortion parameter mappings (EffectBase parameter name -> JUCE parameter ID)
+// Distortion parameters
 constexpr auto			distortionParameters	   = std::array{paramDistortionDrive, paramMixDistortion, paramOutput, paramDistortionType};
 
-// Delay parameter mappings
+// Delay parameters
 constexpr auto			delayParameters			   = std::array{paramMixDelay, paramDelayTimeLeft, paramDelayTimeRight, paramDelayFeedback, paramDelayModel};
 
-// Gain parameter mappings
+// Gain parameters
 constexpr auto			gainParameters			   = std::array{paramInput, paramOutput};
 
-// Panner parameter mappings
+// Panner parameters
 constexpr auto			pannerMonoParameters	   = std::array{paramMonoPanValue, paramMonoLfoFreq, paramMonoLfoDepth};
 
 constexpr auto			pannerStereoParameters =
 	std::array{paramStereoLeftPanValue, paramStereoRightPanValue, paramStereoLeftLfoFreq, paramStereoRightLfoFreq, paramStereoLeftLfoDepth, paramStereoRightLfoDepth};
 
 constexpr auto pannerCommonParameters = std::array{paramPannerLfoEnabled};
+
+// EQ parameters
+constexpr auto eqParameters =
+	std::array{paramEqBand0Frequency, paramEqBand0Gain, paramEqBand0Q, paramEqBand0Enabled, paramEqBand1Frequency, paramEqBand1Gain, paramEqBand1Q, paramEqBand1Enabled,
+			   paramEqBand2Frequency, paramEqBand2Gain, paramEqBand2Q, paramEqBand2Enabled, paramEqBand3Frequency, paramEqBand3Gain, paramEqBand3Q, paramEqBand3Enabled};
 
 
 //==============================================================================

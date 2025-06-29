@@ -82,12 +82,76 @@ void ParametricEQ<SampleType>::reset()
 template <typename SampleType>
 void ParametricEQ<SampleType>::setParameter(const std::string &name, float value)
 {
+	// Parse parameter name and extract band index + parameter type
+	// Format is "band{index}_{parameter}, eg. "band0_frequency", "band2_q",..
+
+	if (name.find("band") == 0)
+	{
+		const auto underscorePos = name.find("_");
+		if (underscorePos != std::string::npos && underscorePos > 4)
+		{
+			const auto bandIndexStr = name.substr(4, underscorePos - 4);
+			const auto paramName	= name.substr(underscorePos + 1);
+
+			try
+			{
+				const int bandIndex = std::stoi(bandIndex);
+				if (bandIndex >= 0 && bandIndex < getNumBands())
+				{
+					if (paramName == "frequency")
+						setBandFrequency(bandIndex, value);
+					else if (paramName == "gain")
+						setBandGain(bandIndex, value);
+					else if (paramName == "q")
+						setBandQ(bandIndex, value);
+					else if (paramName == "enabled")
+						setBandEnabled(bandIndex, value);
+				}
+			}
+			catch (const std::exception &)
+			{
+				// Invalid band index
+				assert(false);
+			}
+		}
+	}
 }
 
 
 template <typename SampleType>
 float ParametricEQ<SampleType>::getParameter(const std::string &name) const
 {
+	// Parse parameter name similar to setParameter
+	if (name.find("band") == 0)
+	{
+		const auto underscorePos = name.find('_');
+		if (underscorePos != std::string::npos && underscorePos > 4)
+		{
+			const auto bandIndexStr = name.substr(4, underscorePos - 4);
+			const auto paramName	= name.substr(underscorePos + 1);
+
+			try
+			{
+				const int bandIndex = std::stoi(bandIndexStr);
+				if (bandIndex >= 0 && bandIndex < getNumBands())
+				{
+					if (paramName == "frequency")
+						return getBandFrequency(bandIndex);
+					else if (paramName == "gain")
+						return getBandGain(bandIndex);
+					else if (paramName == "q")
+						return getBandQ(bandIndex);
+					else if (paramName == "enabled")
+						return getBandEnabled(bandIndex) ? 1.0f : 0.0f;
+				}
+			}
+			catch (const std::exception &)
+			{
+				// Invalid band index
+				assert(false);
+			}
+		}
+	}
 	return 0.0f;
 }
 
