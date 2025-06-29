@@ -33,9 +33,9 @@ constexpr float			outputMinValue			   = -24.0f;
 constexpr float			outputMaxValue			   = 24.0f;
 constexpr float			outputDefaultValue		   = 0.0f;
 
-constexpr auto			paramMixDelay			   = "mix";
+constexpr auto			paramMixDelay			   = "mixDelay";
 constexpr auto			delayMixName			   = "Mix (Delay)";
-constexpr auto			paramMixDistortion		   = "mix";
+constexpr auto			paramMixDistortion		   = "mixDistortion";
 constexpr auto			distortionMixName		   = "Mix (Distortion)";
 constexpr float			mixMinValue				   = 0.0f;
 constexpr float			mixMaxValue				   = 1.0f;

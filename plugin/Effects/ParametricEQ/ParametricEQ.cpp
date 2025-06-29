@@ -18,8 +18,9 @@ ParametricEQ<SampleType>::ParametricEQ()
 		mBands[i].frequency.setCurrentAndTargetValue(defaultFrequencies[i]);
 		mBands[i].gain.setCurrentAndTargetValue(0.0f);
 		mBands[i].q.setCurrentAndTargetValue(0.707f);
-		mBands[i].type	  = defaultTypes[i];
-		mBands[i].enabled = true;
+		mBands[i].type = defaultTypes[i];
+		mBands[i].enabled.store(true);
+		mBands[i].needsUpdate = true;
 	}
 }
 
@@ -58,14 +59,38 @@ void ParametricEQ<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
 		return;
 	}
 
-	// Update coefficients if needed
-	if (mNeedsUpdate)
+	const auto numChannels = buffer.getNumChannels();
+	const auto numSamples  = buffer.getNumSamples();
+
+	// Check if any smoothed values are changing and update coefficients accordingly
+	for (int bandIndex = 0; bandIndex < getNumBands(); ++bandIndex)
 	{
-		updateAllBands();
-		mNeedsUpdate = false;
+		auto &band = mBands[bandIndex];
+		if (band.frequency.isSmoothing() || band.gain.isSmoothing() || band.q.isSmoothing() || band.needsUpdate)
+		{
+			updateBandCoefficients(bandIndex);
+			band.needsUpdate = false;
+		}
 	}
 
-	// TODO: Add processing code
+	// Process each channel separately (since IIR::Filter only handles mono)
+	for (int channel = 0; channel < numChannels; ++channel)
+	{
+		// Process each enabled band for this channel
+		for (auto &band : mBands)
+		{
+			if (band.enabled.load())
+			{
+				auto *channelData = buffer.getWritePointer(channel);
+
+				// Process this channel's data through the filter sample-by-sample
+				for (int sample = 0; sample < numSamples; ++sample)
+				{
+					channelData[sample] = band.filter.processSample(channelData[sample]);
+				}
+			}
+		}
+	}
 }
 
 
@@ -164,6 +189,7 @@ void ParametricEQ<SampleType>::setBandFrequency(int bandIndex, float frequency)
 		// Clamp frequency to valid range (20Hz - Nyquist)
 		const auto clampedFreq = juce::jlimit(20.0f, static_cast<float>(mSampleRate * 0.49), frequency);
 		mBands[bandIndex].frequency.setTargetValue(clampedFreq);
+		mBands[bandIndex].needsUpdate = true;
 	}
 }
 
@@ -176,6 +202,7 @@ void ParametricEQ<SampleType>::setBandGain(int bandIndex, float gainDB)
 		// Clamp gain to reasonable range
 		const auto clampedGain = juce::jlimit(-24.0f, 24.0f, gainDB);
 		mBands[bandIndex].gain.setTargetValue(clampedGain);
+		mBands[bandIndex].needsUpdate = true;
 	}
 }
 
@@ -188,6 +215,7 @@ void ParametricEQ<SampleType>::setBandQ(int bandIndex, float q)
 		// Clamp Q to reasonable range
 		const auto clampedQ = juce::jlimit(0.1f, 20.0f, q);
 		mBands[bandIndex].q.setTargetValue(clampedQ);
+		mBands[bandIndex].needsUpdate = true;
 	}
 }
 

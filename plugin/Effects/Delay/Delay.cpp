@@ -177,7 +177,7 @@ float Delay<SampleType>::getParameter(const std::string &name) const
 template <typename SampleType>
 void Delay<SampleType>::prepareDelayBuffer()
 {
-	mDelayBuffer.prepare(this->getSampleRate(), this->getMaxBlockSize(), this->getNumChannels(), static_cast<int>(mMaxDelayInMS * 0.001f * this->getSampleRate()));
+	mDelayBuffer.prepare(this->getSampleRate(), this->getMaxBlockSize(), this->getNumChannels(), static_cast<int>(mMaxDelayInMS * 0.001f));
 }
 
 

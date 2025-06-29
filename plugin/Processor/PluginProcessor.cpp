@@ -160,12 +160,11 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiB
 	for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
 		buffer.clear(i, 0, buffer.getNumSamples());
 
-	// Processing the distortion
+	// Processing the modules
 	mDistortionModule.process(buffer);
-
 	mDelayModule.process(buffer);
-
 	mPannerModule.process(buffer);
+	mEQModule.process(buffer);
 
 	// Apply output gain
 	float outputLevel = mOutput.getNextValue();
