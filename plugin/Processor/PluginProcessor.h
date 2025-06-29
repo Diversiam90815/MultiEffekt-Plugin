@@ -13,9 +13,9 @@
 
 #include "Project.h"
 #include "Parameters.h"
-#include "Distortion.h"
-#include "Delay.h"
-#include "PannerManager.h"
+#include "Distortion/Distortion.h"
+#include "Delay/Delay.h"
+#include "Panner/PannerManager.h"
 
 
 class PluginProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener

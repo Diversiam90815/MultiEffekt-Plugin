@@ -1,12 +1,13 @@
-#-----------------------------------------------------------------------------------------
-# Audio Plugin
-#-----------------------------------------------------------------------------------------
+#==========================================
+#   Audio Multi Effect Plugin
+#       by Jens W. Langenberg
+#==========================================
 
 cmake_minimum_required(VERSION 3.25)
 
-set(PLUGIN_VERSION 1.0.71)
+set(PROJECT_VERSION 0.1.71)
 
-project(MultiEffectPlugin VERSION ${PLUGIN_VERSION})
+project(MultiEffectPlugin VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 
 
 #-----------------------------------------------------------------------------------------
@@ -57,13 +58,23 @@ set(Processor_Files
         ${PROCESSOR_DIR}/PluginProcessor.h  ${PROCESSOR_DIR}/PluginProcessor.cpp
 )
 
-set(Effect_Files 
-        ${EFFECTS_DIR}/Distortion.h         ${EFFECTS_DIR}/Distortion.cpp
-        ${EFFECTS_DIR}/Delay.h              ${EFFECTS_DIR}/Delay.cpp
-        ${EFFECTS_DIR}/MonoPanner.h         ${EFFECTS_DIR}/MonoPanner.cpp
-        ${EFFECTS_DIR}/StereoPanner.h       ${EFFECTS_DIR}/StereoPanner.cpp
-        ${EFFECTS_DIR}/PannerManager.h      ${EFFECTS_DIR}/PannerManager.cpp
-        ${EFFECTS_DIR}/PannerBase.h
+set(Effect_Base_Files 
+        ${EFFECTS_DIR}/EffectBase.h         ${EFFECTS_DIR}/EffectBase.cpp
+)
+
+set(Effect_Distortion_Files 
+        ${EFFECTS_DIR}/Distortion/Distortion.h         ${EFFECTS_DIR}/Distortion/Distortion.cpp
+)
+
+set(Effect_Delay_Files 
+        ${EFFECTS_DIR}/Delay/Delay.h              ${EFFECTS_DIR}/Delay/Delay.cpp
+)
+
+set(Effect_Panner_Files
+        ${EFFECTS_DIR}/Panner/PannerBase.h
+        ${EFFECTS_DIR}/Panner/PannerManager.h      ${EFFECTS_DIR}/Panner/PannerManager.cpp
+        ${EFFECTS_DIR}/Panner/MonoPanner.h         ${EFFECTS_DIR}/Panner/MonoPanner.cpp
+        ${EFFECTS_DIR}/Panner/StereoPanner.h       ${EFFECTS_DIR}/Panner/StereoPanner.cpp
 )
 
 set(UI_Files 
@@ -81,7 +92,10 @@ set(Misc_Files
 
 set(ALL_FILES
     ${Processor_Files}
-    ${Effect_Files}
+    ${Effect_Base_Files}
+    ${Effect_Distortion_Files}
+    ${Effect_Delay_Files}
+    ${Effect_Panner_Files}
     ${UI_Files}
     ${Buffer_Files}
     ${Misc_Files}
@@ -92,11 +106,7 @@ set(ALL_FILES
 #   Source Groups
 #-----------------------------------------------------------------------------------------
 
-source_group("MainProcessor"    FILES ${Processor_Files})
-source_group("Effects"          FILES ${Effect_Files})
-source_group("UI"               FILES ${UI_Files})
-source_group("Buffer"           FILES ${Buffer_Files})
-source_group("Misc"             FILES ${Misc_Files})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${ALL_FILES})
 
 
 #-----------------------------------------------------------------------------------------
