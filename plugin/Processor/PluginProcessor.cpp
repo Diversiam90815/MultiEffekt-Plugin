@@ -111,8 +111,7 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiB
 		buffer.clear(i, 0, buffer.getNumSamples());
 
 	// Processing the distortion
-	juce::dsp::AudioBlock<float> block{buffer};
-	mDistortionModule.process(juce::dsp::ProcessContextReplacing<float>(block));
+	mDistortionModule.process(buffer);
 
 	mDelayModule.process(buffer);
 

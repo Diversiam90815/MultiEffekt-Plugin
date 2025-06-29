@@ -16,9 +16,12 @@ Distortion<SampleType>::Distortion()
 
 
 template <typename SampleType>
-void Distortion<SampleType>::prepare(juce::dsp::ProcessSpec &spec)
+void Distortion<SampleType>::prepare(const juce::dsp::ProcessSpec &spec)
 {
-	mSampleRate = spec.sampleRate;
+	// Store parameters using EffectBase methods
+	this->setSampleRate(spec.sampleRate);
+	this->setNumChannels(static_cast<int>(spec.numChannels));
+	this->setMaxBlockSize(static_cast<int>(spec.maximumBlockSize));
 
 	mDCFilter.prepare(spec);
 	mDCFilter.setCutoffFrequency(10.0);
@@ -29,19 +32,49 @@ void Distortion<SampleType>::prepare(juce::dsp::ProcessSpec &spec)
 
 
 template <typename SampleType>
+void Distortion<SampleType>::process(juce::AudioBuffer<SampleType> &buffer)
+{
+	if (this->isBypassed())
+	{
+		this->processBypassed(buffer);
+		return;
+	}
+
+	const auto numChannels = buffer.getNumChannels();
+	const auto numSamples  = buffer.getNumSamples();
+
+	for (int channel = 0; channel < numChannels; ++channel)
+	{
+		auto *channelData = buffer.getWritePointer(channel);
+
+		for (int i = 0; i < numSamples; ++i)
+		{
+			// Apply DC filter
+			channelData[i] = mDCFilter.processSample(channel, channelData[i]);
+
+			// Apply distortion
+			channelData[i] = processSample(channelData[i]);
+		}
+	}
+}
+
+
+template <typename SampleType>
 void Distortion<SampleType>::reset()
 {
-	if (mSampleRate <= 0)
+	if (this->getSampleRate() <= 0)
 		return;
 
-	mDrive.reset(mSampleRate, 0.02);
+	mDrive.reset(this->getSampleRate(), 0.02);
 	mDrive.setTargetValue(0.0f);
 
-	mMix.reset(mSampleRate, 0.02);
+	mMix.reset(this->getSampleRate(), 0.02);
 	mMix.setTargetValue(1.0f);
 
-	mOutput.reset(mSampleRate, 0.02);
+	mOutput.reset(this->getSampleRate(), 0.02);
 	mOutput.setTargetValue(0.0f);
+
+	mDCFilter.reset();
 }
 
 
@@ -63,32 +96,6 @@ template <typename SampleType>
 void Distortion<SampleType>::setOutput(float newOutput)
 {
 	mOutput.setTargetValue(newOutput);
-}
-
-
-template <typename SampleType>
-template <typename ProcessContext>
-void Distortion<SampleType>::process(const ProcessContext &context) noexcept
-{
-	const auto &inputBlock	= context.getInputBlock();
-	auto	   &outputBlock = context.getOutputBlock();
-	const auto	numChannels = outputBlock.getNumChannels();
-	const auto	numSamples	= outputBlock.getNumSamples();
-
-	jassert(inputBlock.getNumChannels() == numChannels);
-	jassert(inputBlock.getNumSamples() == numSamples);
-
-	for (size_t channel = 0; channel < numChannels; ++channel)
-	{
-		auto *inputSamples	= inputBlock.getChannelPointer(channel);
-		auto *outputSamples = outputBlock.getChannelPointer(channel);
-
-		for (size_t i = 0; i < numSamples; ++i)
-		{
-			outputSamples[i] = mDCFilter.processSample(channel, outputSamples[i]);
-			outputSamples[i] = processSample(inputSamples[i]);
-		}
-	}
 }
 
 
@@ -117,6 +124,36 @@ SampleType Distortion<SampleType>::processSample(SampleType input) noexcept
 
 	default: break;
 	}
+}
+
+
+template <typename SampleType>
+void Distortion<SampleType>::setParameter(const std::string &name, float value)
+{
+	if (name == "drive")
+		setDrive(value);
+	else if (name == "mix")
+		setMix(value);
+	else if (name == "output")
+		setOutput(value);
+	else if (name == "type")
+		setCurrentDistortionType(static_cast<DistortionType>(static_cast<int>(value)));
+}
+
+
+template <typename SampleType>
+float Distortion<SampleType>::getParameter(const std::string &name) const
+{
+	if (name == "drive")
+		return mDrive.getCurrentValue();
+	else if (name == "mix")
+		return mMix.getCurrentValue();
+	else if (name == "output")
+		return mOutput.getCurrentValue();
+	else if (name == "type")
+		return static_cast<float>(static_cast<int>(getCurrentDistortionType()));
+
+	return 0.0f;
 }
 
 
@@ -212,7 +249,3 @@ SampleType Distortion<SampleType>::processSaturation(SampleType inputSample)
 // Declare Distortion Template Classes that may be used
 template class Distortion<float>;
 template class Distortion<double>;
-
-// Explicit instantiation of member function templates
-template void Distortion<float>::process<juce::dsp::ProcessContextReplacing<float>>(const juce::dsp::ProcessContextReplacing<float> &) noexcept;
-template void Distortion<double>::process<juce::dsp::ProcessContextReplacing<double>>(const juce::dsp::ProcessContextReplacing<double> &) noexcept;
